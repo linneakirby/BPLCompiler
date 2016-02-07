@@ -3,20 +3,67 @@ package Compiler;
 import java.util.Scanner;
 import java.io.File;
 import java.lang.Exception;
+import java.lang.StringBuilder;
 
 public class BPLScanner{
-	public Scanner scan;
-	public Token nextToken;
-	public String currentLine;
+	public Scanner filescan;
+	private Token nextToken;
+	private String currentLine;
+	private int peekIndex;
+	private char currchar;
+	private char peek;
+	private int lineNumber;
+	private StringBuilder tokenSoFar;
 
 	public BPLScanner(String filename){
 		try{
-			scan = new Scanner(new File(filename));
+			filescan = new Scanner(new File(filename));
+			lineNumber = 0;
+			currentLine = "";
+			getNextToken();
 		}
 		catch(Exception e){
-			System.out.println("Your file is invalid! "+e.getMessage());
+			System.out.println("Your file is invalid! ");
 		}
-		//nextToken = getNextToken();
+	}
+
+	public Token nextToken(){
+		return nextToken;
+	}
+
+	//sets currentLine and sets its peekIndex to 0
+	private void getCurrentLine(){
+		if(filescan.hasNextLine()){
+			currentLine = filescan.nextLine();
+			peekIndex = 0;
+			lineNumber++;
+		}
+		else{
+			nextToken = new Token(Token.T_EOF, "", lineNumber);
+			currentLine = "";
+		}
+	}
+
+	//sets peek and checks it to see if it can fit in the current token
+	private void peek(){
+		peek = currentLine.charAt(peekIndex);
+		peekIndex++;
+		System.out.println(peek);
+	}
+
+	//checks to see if peek is a valid addition to the end of tokenSoFar
+	private void checkValid(){
+
+	}
+
+	//sets nextToken
+	public void getNextToken(){
+		tokenSoFar = new StringBuilder();
+		getCurrentLine();
+		while(peekIndex < currentLine.length){
+			peek();
+			checkValid();
+		}
 	}
 
 	/*public void getNextToken() throws Exception {
@@ -42,7 +89,7 @@ public class BPLScanner{
 				while (j < currentLine.length() && isDigit(currentLine.charAt(j)) )
 					j += 1;
 				String tokenString = currentLine.substring(i, j);
-				nextToken = new NumberToken(Token.T_NUM, tokenString, lineNumber);
+				nextToken = new Token(Token.T_NUM, tokenString, lineNumber);
 				currentLine = currentLine.substring(j);
 			}
 			else if (isLetter(ch)) {
@@ -62,24 +109,24 @@ public class BPLScanner{
 }*/
 
 	public static void main(String[ ] args) {
-		System.out.println("Test");
 		String filename ;
 		BPLScanner myScanner;
 		try{
 			filename = args[0] ;
 			myScanner = new BPLScanner(filename);
+			/*while (myScanner.nextToken().type != Token.T_EOF) { 
+				try {
+					myScanner.getNextToken();
+					//System.out.println(myScanner.nextToken());
+				}
+				catch (Exception e) {
+				System.out.println(e);
+				}
+			}*/
 		}
 		catch(ArrayIndexOutOfBoundsException e){
 			System.out.println("Please enter a filename! "+e.getMessage());
 		}
-		/*while (myScanner.nextToken.type != Token.T_EOF) {
-			try {
-				myScanner.getNextToken();
-				System.out.println(myScanner.nextToken);
-			}
-			catch (Exception e) {
-			System.out.println(e);
-			}
-		}*/
+		
 	}
 }
