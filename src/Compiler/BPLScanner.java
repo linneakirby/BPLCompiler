@@ -4,6 +4,7 @@ import java.util.Scanner;
 import java.io.File;
 import java.lang.Exception;
 import java.lang.StringBuilder;
+import java.lang.String;
 
 public class BPLScanner{
 	public Scanner filescan;
@@ -14,13 +15,19 @@ public class BPLScanner{
 	private char peek;
 	private int lineNumber;
 	private StringBuilder tokenSoFar;
+	private boolean isId;
+	private boolean isNum;
+	private boolean isSpecialSymbol;
+	private boolean done;
 
 	public BPLScanner(String filename){
 		try{
 			filescan = new Scanner(new File(filename));
 			lineNumber = 0;
 			currentLine = "";
+			resetMarkers();
 			getNextToken();
+			System.out.println(nextToken().type+" "+nextToken().tokenString+" "+nextToken().lineNumber);
 		}
 		catch(Exception e){
 			System.out.println("Your file is invalid! ");
@@ -44,25 +51,138 @@ public class BPLScanner{
 		}
 	}
 
-	//sets peek and checks it to see if it can fit in the current token
+	//sets peek
 	private void peek(){
 		peek = currentLine.charAt(peekIndex);
 		peekIndex++;
-		System.out.println(peek);
+		//System.out.println(peek);
+	}
+
+	//checks to see if a character is a symbol
+	private boolean isSymbol(char c){
+		if(c == '(' || c == ')' || c == ';' || c == ',' || c == '[' || c == ']'
+			|| c == '{' || c == '}' || c == '<' || c == '=' || c == '>' || c == '!'
+			|| c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '&'){
+			return true;
+		}
+		return false;
+	}
+
+	private void getTokenType(){
+		if(Character.isDigit(currchar)){
+			isNum = true;
+		}
+		else if(Character.isLetter(currchar)){
+			isId = true;
+		}
+		else if(isSymbol(currchar)){
+			isSpecialSymbol = true;
+		}
+	}
+
+	private void finishSpecialSymbolToken(){
+
+	}
+
+	//checks to see if an Id token is actually a keyword
+	private void checkKeyword(){
+		String tokenString = tokenSoFar.toString();
+		if(tokenString.equals("int")){
+			nextToken = new Token(Token.T_INT, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("void")){
+			nextToken = new Token(Token.T_VOID, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("string")){
+			nextToken = new Token(Token.T_STRING, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("if")){
+			nextToken = new Token(Token.T_IF, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("else")){
+			nextToken = new Token(Token.T_ELSE, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("while")){
+			nextToken = new Token(Token.T_WHILE, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("return")){
+			nextToken = new Token(Token.T_RETURN, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("write")){
+			nextToken = new Token(Token.T_WRITE, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("writeln")){
+			nextToken = new Token(Token.T_WRITELN, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("read")){
+			nextToken = new Token(Token.T_READ, tokenString, lineNumber);
+		}
+		else{
+			nextToken = new Token(Token.T_ID, tokenString, lineNumber);
+		}
+	}
+
+	private void resetMarkers(){
+		done = true;
+		isNum = false;
+		isId = false;
+		isSpecialSymbol = false;
+	}
+
+	//checks to see if a new line is needed
+	private void checkLine(){
+		if(peekIndex >= currentLine.length()){
+			getCurrentLine();
+			peekIndex = 0;
+		}
+	}
+
+	private void finishToken(){
+		if(isNum){
+			nextToken = new Token(Token.T_NUM, tokenSoFar.toString(), lineNumber);
+		}
+		else if(isId){
+			checkKeyword();
+		}
+		else if(isSpecialSymbol){
+			finishSpecialSymbolToken();
+		}
+		else{
+			nextToken = new Token(Token.T_EOF, "", lineNumber);
+		}
+		resetMarkers();
+
 	}
 
 	//checks to see if peek is a valid addition to the end of tokenSoFar
 	private void checkValid(){
-
+		if(tokenSoFar.length() == 0){ //if the token is empty
+			currchar = peek;
+			getTokenType();
+		}
+		else if(Character.isDigit(peek) && (isNum || isId)){
+			currchar = peek;
+		}
+		else if(Character.isLetter(peek) && (isId)){
+			currchar = peek;
+		}
+		else if(isSymbol(peek)){
+			//TODO
+		}
+		else{
+			finishToken();
+		}
 	}
 
 	//sets nextToken
 	public void getNextToken(){
+		done = false;
 		tokenSoFar = new StringBuilder();
-		getCurrentLine();
-		while(peekIndex < currentLine.length){
+		checkLine();
+		while((peekIndex < currentLine.length()) && !done){
 			peek();
 			checkValid();
+			tokenSoFar.append(currchar);
 		}
 	}
 
