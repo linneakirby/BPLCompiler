@@ -18,6 +18,7 @@ public class BPLScanner{
 	private boolean isId;
 	private boolean isNum;
 	private boolean isSpecialSymbol;
+	private boolean comment;
 	private boolean done;
 
 	public BPLScanner(String filename){
@@ -26,11 +27,14 @@ public class BPLScanner{
 			lineNumber = 0;
 			currentLine = "";
 			resetMarkers();
-			getNextToken();
-			System.out.println(nextToken().type+" "+nextToken().tokenString+" "+nextToken().lineNumber);
+			nextToken = new Token(Token.T_ID, "test", 0);
+			getCurrentLine();
+			peek();
+			//getNextToken();
+			//System.out.println(nextToken().type+" "+nextToken().tokenString+" "+nextToken().lineNumber);
 		}
 		catch(Exception e){
-			System.out.println("Your file is invalid! ");
+			System.out.println("Your file is invalid! "+e);
 		}
 	}
 
@@ -73,6 +77,7 @@ public class BPLScanner{
 			isNum = true;
 		}
 		else if(Character.isLetter(currchar)){
+			//System.out.println(currchar);
 			isId = true;
 		}
 		else if(isSymbol(currchar)){
@@ -80,8 +85,162 @@ public class BPLScanner{
 		}
 	}
 
-	private void finishSpecialSymbolToken(){
+	private void resetMarkers(){
+		done = true;
+		isNum = false;
+		isId = false;
+		isSpecialSymbol = false;
+		comment = false;
+	}
 
+	//checks to see if a new line is needed
+	private void checkLine(){
+		if(peekIndex >= currentLine.length()){
+			//finishToken();
+			getCurrentLine();
+			peekIndex = 0;
+		}
+	}
+
+	private void checkSymbol(){
+		if(currchar == '<' || currchar == '=' || currchar == '!' || currchar == '>'){
+			if(peek == '='){
+				currchar = peek;
+			}
+		}
+		else if(currchar == '*'){
+			if(peek == '/'){
+				currchar = peek;
+			}
+		}
+		else{
+			finishToken();
+		}
+	}
+
+	private void finishToken(){
+		if(isNum){
+			nextToken = new Token(Token.T_NUM, tokenSoFar.toString(), lineNumber);
+		}
+		else if(isId){
+			checkKeyword();
+		}
+		else if(isSpecialSymbol){
+			finishSpecialSymbolToken();
+		}
+		else{
+			nextToken = new Token(Token.T_EOF, "", lineNumber);
+		}
+		resetMarkers();
+
+	}
+
+	//checks to see if peek is a valid addition to the end of tokenSoFar
+	private void checkValid(){
+		/*if(tokenSoFar.length() == 0){ //if the token is empty
+			currchar = peek;
+			getTokenType();
+		}*/
+		if(Character.isDigit(peek) && (isNum || isId)){
+			currchar = peek;
+		}
+		else if(Character.isLetter(peek) && (isId)){
+			currchar = peek;
+		}
+		else if(isSymbol(peek)){
+			checkSymbol();
+		}
+		else if(Character.isWhitespace(peek)){
+			while(Character.isWhitespace(peek)){
+				peek();
+			}
+			finishToken();
+		}
+		else{
+			finishToken();
+		}
+	}
+
+	//sets nextToken
+	public void getNextToken(){
+		checkLine();
+		done = false;
+		tokenSoFar = new StringBuilder();
+		while((peekIndex < currentLine.length()) && !done){
+			currchar = peek;
+			tokenSoFar.append(currchar);
+			getTokenType();
+			peek();
+			checkValid();
+		}
+
+	}
+
+	private void finishSpecialSymbolToken(){
+		String tokenString = tokenSoFar.toString();
+		if(tokenString.equals(";")){
+			nextToken = new Token(Token.T_SEMICOLON, tokenString, lineNumber);
+		}
+		else if(tokenString.equals(",")){
+			nextToken = new Token(Token.T_COMMA, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("[")){
+			nextToken = new Token(Token.T_LBRACKET, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("]")){
+			nextToken = new Token(Token.T_RBRACKET, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("{")){
+			nextToken = new Token(Token.T_LCURLY, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("}")){
+			nextToken = new Token(Token.T_RCURLY, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("(")){
+			nextToken = new Token(Token.T_LPAREN, tokenString, lineNumber);
+		}
+		else if(tokenString.equals(")")){
+			nextToken = new Token(Token.T_RPAREN, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("<")){
+			nextToken = new Token(Token.T_LESS, tokenString, lineNumber);
+		}
+		else if(tokenString.equals(">")){
+			nextToken = new Token(Token.T_GREATER, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("<=")){
+			nextToken = new Token(Token.T_LESSEQ, tokenString, lineNumber);
+		}
+		else if(tokenString.equals(">=")){
+			nextToken = new Token(Token.T_GREATEREQ, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("==")){
+			nextToken = new Token(Token.T_EQEQ, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("!=")){
+			nextToken = new Token(Token.T_NOTEQ, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("+")){
+			nextToken = new Token(Token.T_PLUS, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("-")){
+			nextToken = new Token(Token.T_MINUS, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("*")){
+			nextToken = new Token(Token.T_STAR, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("/")){
+			nextToken = new Token(Token.T_SLASH, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("%")){
+			nextToken = new Token(Token.T_PERCENT, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("&")){
+			nextToken = new Token(Token.T_AND, tokenString, lineNumber);
+		}
+		else if(tokenString.equals("=")){
+			nextToken = new Token(Token.T_EQ, tokenString, lineNumber);
+		}
 	}
 
 	//checks to see if an Id token is actually a keyword
@@ -119,70 +278,6 @@ public class BPLScanner{
 		}
 		else{
 			nextToken = new Token(Token.T_ID, tokenString, lineNumber);
-		}
-	}
-
-	private void resetMarkers(){
-		done = true;
-		isNum = false;
-		isId = false;
-		isSpecialSymbol = false;
-	}
-
-	//checks to see if a new line is needed
-	private void checkLine(){
-		if(peekIndex >= currentLine.length()){
-			getCurrentLine();
-			peekIndex = 0;
-		}
-	}
-
-	private void finishToken(){
-		if(isNum){
-			nextToken = new Token(Token.T_NUM, tokenSoFar.toString(), lineNumber);
-		}
-		else if(isId){
-			checkKeyword();
-		}
-		else if(isSpecialSymbol){
-			finishSpecialSymbolToken();
-		}
-		else{
-			nextToken = new Token(Token.T_EOF, "", lineNumber);
-		}
-		resetMarkers();
-
-	}
-
-	//checks to see if peek is a valid addition to the end of tokenSoFar
-	private void checkValid(){
-		if(tokenSoFar.length() == 0){ //if the token is empty
-			currchar = peek;
-			getTokenType();
-		}
-		else if(Character.isDigit(peek) && (isNum || isId)){
-			currchar = peek;
-		}
-		else if(Character.isLetter(peek) && (isId)){
-			currchar = peek;
-		}
-		else if(isSymbol(peek)){
-			//TODO
-		}
-		else{
-			finishToken();
-		}
-	}
-
-	//sets nextToken
-	public void getNextToken(){
-		done = false;
-		tokenSoFar = new StringBuilder();
-		checkLine();
-		while((peekIndex < currentLine.length()) && !done){
-			peek();
-			checkValid();
-			tokenSoFar.append(currchar);
 		}
 	}
 
@@ -228,21 +323,25 @@ public class BPLScanner{
 	}
 }*/
 
+	public void printToken(){
+		System.out.printf("Token: %3d \t String: %-5s \t Line Number: %3d\n",nextToken().type,nextToken().tokenString,nextToken().lineNumber);
+	}
+
 	public static void main(String[ ] args) {
 		String filename ;
 		BPLScanner myScanner;
 		try{
 			filename = args[0] ;
 			myScanner = new BPLScanner(filename);
-			/*while (myScanner.nextToken().type != Token.T_EOF) { 
+			while (myScanner.nextToken().type != Token.T_EOF) { 
 				try {
 					myScanner.getNextToken();
-					//System.out.println(myScanner.nextToken());
+					myScanner.printToken();
 				}
 				catch (Exception e) {
 				System.out.println(e);
 				}
-			}*/
+			}
 		}
 		catch(ArrayIndexOutOfBoundsException e){
 			System.out.println("Please enter a filename! "+e.getMessage());
