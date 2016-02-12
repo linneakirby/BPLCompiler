@@ -258,8 +258,8 @@ public class BPLScanner{
 					finishToken();
 					checkLine();
 					if(!end){
-						while(currentLine.length() == 0){
-							checkLine(); //make sure the line isn't empty
+						while(currentLine.length() == 0){ //make sure the line isn't empty
+							checkLine(); 
 						}
 						peek();
 					}

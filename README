@@ -1,0 +1,8 @@
+BPL Compiler - Linnea Kirby
+
+To use the Scanner:
+	1. Since there is a Makefile, just run "make" to get the .class files
+	They will be located in the bin/Compiler/ folder
+	2. I have a runMain shell script that will run the scanner's main() function on either factorial.bpl or singletokens.txt (depending on which line is uncommented.
+	3. To run the scanner with a different file, first make sure your target file is in the bin/ folder 
+	Then, either make sure you're in the bin/ folder and use the command "java Compiler.BPLScanner <filename>" or change one of the filenames in the runMain shell script
