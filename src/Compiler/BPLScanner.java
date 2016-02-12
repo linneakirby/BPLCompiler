@@ -51,6 +51,7 @@ public class BPLScanner{
 			currentLine = filescan.nextLine();
 			peekIndex = 0;
 			lineNumber++;
+			//System.out.println("lineNumber is now: "+lineNumber);
 		}
 		else{
 			end = true;
@@ -155,14 +156,8 @@ public class BPLScanner{
 	}
 
 	private void startToken(){
-		if(peekIndex == currentLine.length()){
-			finishToken();
-			checkLine();
-			if(!end){
-				peek();
-			}
-		}
 		checkLine();
+		//System.out.println("CHECKED LINE and lineNumber is: "+lineNumber);
 		done = false;
 		tokenSoFar = new StringBuilder();
 		while(Character.isWhitespace(peek)){
@@ -252,8 +247,11 @@ public class BPLScanner{
 			startToken();
 			while((peekIndex <= currentLine.length()) && !done){
 				if(peekIndex == currentLine.length()){
-					//System.out.println(nextToken.tokenString);
 					finishToken();
+					checkLine();
+					if(!end){
+						peek();
+					}
 				}
 				else if(isComment){	
 					getComment();

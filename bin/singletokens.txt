@@ -1,6 +1,6 @@
 boop /*COMMENT
  STILL COMMENT*/ blap
-return n m*10 1
+return n m*10 3
 		other stuff
 		go
 /*Here's another comment*/
