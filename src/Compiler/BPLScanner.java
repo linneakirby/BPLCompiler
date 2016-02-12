@@ -156,16 +156,24 @@ public class BPLScanner{
 	}
 
 	private void startToken(){
-		checkLine();
-		//System.out.println("CHECKED LINE and lineNumber is: "+lineNumber);
-		done = false;
-		tokenSoFar = new StringBuilder();
 		while(Character.isWhitespace(peek)){
 			peek();
 		}
+		done = false;
+		tokenSoFar = new StringBuilder();
 		currchar = peek;
 		tokenSoFar.append(currchar);
 		getTokenType();
+		//checkLine();
+		//System.out.println("lineNumber is: "+lineNumber);
+		/*done = false;
+		tokenSoFar = new StringBuilder();*/
+		/*while(Character.isWhitespace(peek)){
+			peek();
+		}*/
+		/*currchar = peek;
+		tokenSoFar.append(currchar);
+		getTokenType();*/
 	}
 
 	private void finishToken(){
@@ -250,6 +258,9 @@ public class BPLScanner{
 					finishToken();
 					checkLine();
 					if(!end){
+						while(currentLine.length() == 0){
+							checkLine(); //make sure the line isn't empty
+						}
 						peek();
 					}
 				}
