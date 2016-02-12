@@ -1,4 +1,8 @@
+boop /*COMMENT
+ STILL COMMENT*/ blap
 return n m*10 1
 		other stuff
 		go
+/*Here's another comment*/
 		single
+string str = "this is a string";
