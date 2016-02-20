@@ -14,7 +14,12 @@ public class BPLScannerTest{
             }
         }*/
 		BPLScanner scan = new BPLScanner("test.txt");
-		//scan.getNextToken();
-		assertEquals("int", scan.nextToken().tokenString);
+		try{
+			scan.getNextToken();
+			assertEquals("int", scan.nextToken().tokenString);
+		}
+		catch(Exception e){
+			System.out.println(e);
+		}
 	}
 }
