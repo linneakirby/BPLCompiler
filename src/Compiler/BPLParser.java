@@ -23,6 +23,10 @@ public class BPLParser{
 		return program;
 	}
 
+	public Token currentToken(){
+		return currentToken;
+	}
+
 	private void getCurrentToken(){
 		try{
 			scanner.getNextToken();
