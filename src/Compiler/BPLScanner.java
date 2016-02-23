@@ -393,13 +393,20 @@ public class BPLScanner{
 		System.out.printf("Token: %3d \t String: %-8s \t Line Number: %3d\n",nextToken().type,nextToken().tokenString,nextToken().lineNumber);
 	}
 
+	public boolean hasNextToken(){
+		if(nextToken().type != Token.T_EOF){
+			return true;
+		}
+		return false;
+	}
+
 	public static void main(String[ ] args) {
 		String filename ;
 		BPLScanner myScanner;
 		try{
 			filename = args[0] ;
 			myScanner = new BPLScanner(filename);
-			while (myScanner.nextToken().type != Token.T_EOF) { 
+			while (myScanner.hasNextToken()) { 
 				try {
 					myScanner.getNextToken();
 					myScanner.printToken();

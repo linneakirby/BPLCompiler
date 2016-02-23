@@ -17,12 +17,6 @@ public class BPLParser{
 		program = createParseTree();
 	}
 
-	private ParseTreeNode createParseTree(){
-		ParseTreeNode program = new ParseTreeNode(currentToken, 1, "program");
-		program.setChild(0, statement());
-		return program;
-	}
-
 	public Token currentToken(){
 		return currentToken;
 	}
@@ -52,20 +46,63 @@ public class BPLParser{
 		return program.toString();
 	}
 
-	private ParseTreeNode statement(){
-		ParseTreeNode s = new ParseTreeNode(currentToken, 1, "statement");
-		s.setChild(0, expressionStatement());
-		return s;
+	private ParseTreeNode createParseTree(){
+		ParseTreeNode program = new ParseTreeNode(currentToken, 1, "program");
+		program.setChild(0, statement());
+		return program;
 	}
 
 	private ParseTreeNode expressionStatement(){
-		ParseTreeNode es = new ParseTreeNode(currentToken, 1, "expression statement");
-		es.setChild(0, expression());
-		getCurrentToken();
+		ParseTreeNode es = new ParseTreeNode(currentToken, 1, "expression statement");	
+		if(checkCurrentToken(Token.T_SEMICOLON)){
+			es.setChild(0, empty());
+		}
+		else{
+			es.setChild(0, expression());
+			getCurrentToken();
+		}
 		if(!checkCurrentToken(Token.T_SEMICOLON)){
 			//TODO
 		}
+		getCurrentToken();
 		return es;
+	}
+
+	private ParseTreeNode compoundStatement(){
+		if(!checkCurrentToken(Token.T_LCURLY)){
+			//TODO
+		}
+		ParseTreeNode cs = new ParseTreeNode(currentToken, 2, "compound statement");
+		getCurrentToken();
+		//TODO: cs.setChild(0, localDecs());
+		cs.setChild(1, statementList());
+		if(!checkCurrentToken(Token.T_RCURLY)){
+			//TODO
+		}
+		return cs;
+	}
+
+	private ParseTreeNode statementList(){
+		ParseTreeNode sl = new ParseTreeNode(currentToken, 2, "statement list");
+		if(checkCurrentToken(Token.T_RCURLY)){
+			sl.setChild(0, empty());
+		}
+		else{
+			sl.setChild(0, statement());
+			sl.setChild(1, statementList());
+		}
+		return sl;
+	}
+
+	private ParseTreeNode statement(){
+		ParseTreeNode s = new ParseTreeNode(currentToken, 1, "statement");
+		if(checkCurrentToken(Token.T_LCURLY)){
+			s.setChild(0, compoundStatement());
+		}
+		else{
+			s.setChild(0, expressionStatement());
+		}
+		return s;
 	}
 
 	private ParseTreeNode expression(){
@@ -75,8 +112,11 @@ public class BPLParser{
 	}
 
 	private ParseTreeNode id(){
-		ParseTreeNode i = new ParseTreeNode(currentToken, 0, currentToken.tokenString);
-		return i;
+		return new ParseTreeNode(currentToken, 0, currentToken.tokenString);
+	}
+
+	private ParseTreeNode empty(){
+		return new ParseTreeNode(currentToken, 0, "empty");
 	}
 
 	public static void main(String[ ] args) {

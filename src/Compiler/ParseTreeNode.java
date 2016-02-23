@@ -41,17 +41,19 @@ public class ParseTreeNode{
 			nodeString.append("\t");
 		}
 		if(children.length == 0){
-			nodeString.append("<"+kind+" {}>\n");
+			nodeString.append(kind+" {}\n");
 		}
 		else{
-			nodeString.append("<"+kind+" {\n");
+			nodeString.append(kind+" {\n");
 			for (ParseTreeNode child:children) {
-				child.toStringHelper(nodeString, depth+1);
+				if(child != null){
+					child.toStringHelper(nodeString, depth+1);
+				}
 			}
 			for(int i=0; i<depth; i++){
 				nodeString.append("\t");
 			}
-			nodeString.append("}>\n");
+			nodeString.append("}\n");
 		}
 		return nodeString;
 	}
