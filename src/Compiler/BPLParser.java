@@ -106,6 +106,39 @@ public class BPLParser{
 		return i;
 	}
 
+	private ParseTreeNode whileStatement(){
+		if(!checkCurrentToken(Token.T_WHILE)){
+			//TODO
+		}
+		ParseTreeNode w = new ParseTreeNode(currentToken, 2, "while statement");
+		getCurrentToken();
+		if(!checkCurrentToken(Token.T_LPAREN)){
+			//TODO
+		}
+		getCurrentToken();
+		w.setChild(0, expression());
+		getCurrentToken();
+		if(!checkCurrentToken(Token.T_RPAREN)){
+			//TODO
+		}
+		getCurrentToken();
+		w.setChild(1, statement());
+		return w;
+	}
+
+	private ParseTreeNode returnStatement(){
+		if(!checkCurrentToken(Token.T_RETURN)){
+			//TODO
+		}
+		ParseTreeNode ret = new ParseTreeNode(currentToken, 1, "return statement");
+		getCurrentToken();
+		if(checkCurrentToken(Token.T_SEMICOLON)){
+			return ret;
+		}
+		ret.setChild(0, expression());
+		return ret;
+	}
+
 	private ParseTreeNode statementList(){
 		ParseTreeNode sl = new ParseTreeNode(currentToken, 2, "statement list");
 		if(checkCurrentToken(Token.T_RCURLY)){
@@ -125,6 +158,12 @@ public class BPLParser{
 		}
 		else if(checkCurrentToken(Token.T_IF)){
 			s.setChild(0, ifStatement());
+		}
+		else if(checkCurrentToken(Token.T_WHILE)){
+			s.setChild(0, whileStatement());
+		}
+		else if(checkCurrentToken(Token.T_RETURN)){
+			s.setChild(0, returnStatement());
 		}
 		else{
 			s.setChild(0, expressionStatement());
