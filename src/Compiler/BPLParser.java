@@ -10,6 +10,7 @@ public class BPLParser{
 	private BPLScanner scanner;
 	private ParseTreeNode program;
 	private Token currentToken;
+	private Token cachedToken;
 
 	public BPLParser(String filename){
 		scanner = new BPLScanner(filename);
@@ -23,12 +24,22 @@ public class BPLParser{
 
 	private void getCurrentToken(){
 		try{
-			scanner.getNextToken();
-			currentToken = scanner.nextToken();
+			if(cachedToken != null){
+				currentToken = cachedToken;
+				cachedToken = null;
+			}
+			else{
+				scanner.getNextToken();
+				currentToken = scanner.nextToken();
+			}
 		}
 		catch (Exception e){
 			System.out.println(e.toString());
 		}
+	}
+
+	private void ungetCurrentToken(){
+		cachedToken = currentToken;
 	}
 
 	private boolean checkCurrentToken(int check){
@@ -99,7 +110,6 @@ public class BPLParser{
 		}
 		getCurrentToken();
 		i.setChild(1, statement());
-		getCurrentToken(); //NOTE: THIS MIGHT CAUSE PROBLEMS
 		if(checkCurrentToken(Token.T_ELSE)){
 			i.setChild(2, statement());
 		}
