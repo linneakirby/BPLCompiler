@@ -82,6 +82,30 @@ public class BPLParser{
 		return cs;
 	}
 
+	private ParseTreeNode ifStatement(){
+		if(!checkCurrentToken(Token.T_IF)){
+			//TODO
+		}
+		ParseTreeNode i = new ParseTreeNode(currentToken, 3, "if statement");
+		getCurrentToken();
+		if(!checkCurrentToken(Token.T_LPAREN)){
+			//TODO
+		}
+		getCurrentToken();
+		i.setChild(0, expression());
+		getCurrentToken();
+		if(!checkCurrentToken(Token.T_RPAREN)){
+			//TODO
+		}
+		getCurrentToken();
+		i.setChild(1, statement());
+		getCurrentToken(); //NOTE: THIS MIGHT CAUSE PROBLEMS
+		if(checkCurrentToken(Token.T_ELSE)){
+			i.setChild(2, statement());
+		}
+		return i;
+	}
+
 	private ParseTreeNode statementList(){
 		ParseTreeNode sl = new ParseTreeNode(currentToken, 2, "statement list");
 		if(checkCurrentToken(Token.T_RCURLY)){
@@ -98,6 +122,9 @@ public class BPLParser{
 		ParseTreeNode s = new ParseTreeNode(currentToken, 1, "statement");
 		if(checkCurrentToken(Token.T_LCURLY)){
 			s.setChild(0, compoundStatement());
+		}
+		else if(checkCurrentToken(Token.T_IF)){
+			s.setChild(0, ifStatement());
 		}
 		else{
 			s.setChild(0, expressionStatement());

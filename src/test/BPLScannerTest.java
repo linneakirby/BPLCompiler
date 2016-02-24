@@ -1,5 +1,5 @@
 import static org.junit.Assert.*;
-import org.junit.Test;
+import org.junit.*;
 import Compiler.*;
 import java.io.File;
 
