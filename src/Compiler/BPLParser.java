@@ -1,6 +1,7 @@
 package Compiler;
 
 import java.util.Scanner;
+import java.util.LinkedList;
 import java.io.File;
 import java.lang.Exception;
 import java.lang.StringBuilder;
@@ -10,10 +11,11 @@ public class BPLParser{
 	private BPLScanner scanner;
 	private ParseTreeNode program;
 	private Token currentToken;
-	private Token cachedToken;
+	private LinkedList cachedToken;
 
 	public BPLParser(String filename) throws BPLException{
 		scanner = new BPLScanner(filename);
+		cachedToken = new LinkedList();
 		getCurrentToken();
 		program = createParseTree();
 	}
@@ -24,9 +26,8 @@ public class BPLParser{
 
 	private void getCurrentToken(){
 		try{
-			if(cachedToken != null){
-				currentToken = cachedToken;
-				cachedToken = null;
+			if(cachedToken.size() != 0){
+				currentToken = cachedToken.poll();
 			}
 			else{
 				scanner.getNextToken();
