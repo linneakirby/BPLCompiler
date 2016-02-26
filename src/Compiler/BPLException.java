@@ -5,8 +5,12 @@ import java.lang.Throwable;
 
 public class BPLException extends Exception{
 
-	public BPLException(){
-		
+	public BPLException(String message){
+		super(message);
+	}
+
+	public BPLException(int lineNumber, String message){
+		super("Line "+lineNumber+": "+message);
 	}
 
 }

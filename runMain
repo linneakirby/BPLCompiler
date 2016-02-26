@@ -1,5 +1,5 @@
 #!/bin/bash
 cd bin
 #java Compiler.BPLScanner factorial.bpl
-#java Compiler.BPLScanner singletokens.txt
+#java Compiler.BPLScanner while.txt
 java Compiler.BPLParser while.txt
