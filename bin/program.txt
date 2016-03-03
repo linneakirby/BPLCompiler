@@ -1,0 +1,3 @@
+void x (void) {
+	write (y);
+}

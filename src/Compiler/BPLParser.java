@@ -11,11 +11,13 @@ public class BPLParser{
 	private BPLScanner scanner;
 	private ParseTreeNode program;
 	private Token currentToken;
-	private LinkedList cachedToken;
+	private LinkedList<Token> cachedTokens;
+
+	public boolean debug = true;
 
 	public BPLParser(String filename) throws BPLException{
 		scanner = new BPLScanner(filename);
-		cachedToken = new LinkedList();
+		cachedTokens = new LinkedList<Token>();
 		getCurrentToken();
 		program = createParseTree();
 	}
@@ -26,12 +28,15 @@ public class BPLParser{
 
 	private void getCurrentToken(){
 		try{
-			if(cachedToken.size() != 0){
-				currentToken = cachedToken.poll();
+			if(cachedTokens.size() != 0){
+				currentToken = cachedTokens.poll();
 			}
 			else{
 				scanner.getNextToken();
 				currentToken = scanner.nextToken();
+			}
+			if(debug){
+				System.out.println(currentToken().tokenString);
 			}
 		}
 		catch (Exception e){
@@ -39,8 +44,18 @@ public class BPLParser{
 		}
 	}
 
+	private void getCurrentTokenWhileCached(){
+		try{
+			scanner.getNextToken();
+			currentToken = scanner.nextToken();
+		}
+		catch (Exception e){
+			System.out.println(e.toString());
+		}
+	}
+
 	private void ungetCurrentToken(){
-		cachedToken = currentToken;
+		cachedTokens.add(currentToken);
 	}
 
 	private boolean checkCurrentToken(int check){
@@ -59,41 +74,163 @@ public class BPLParser{
 	}
 
 	private ParseTreeNode createParseTree() throws BPLException{
+		if(debug){
+			System.out.println("PROGRAM");
+		}
 		ParseTreeNode program = new ParseTreeNode(currentToken, 1, "program");
-		program.setChild(0, statement());
+		program.setChild(0, declarationList());
 		return program;
 	}
 
-	private ParseTreeNode expressionStatement() throws BPLException{
-		ParseTreeNode es = new ParseTreeNode(currentToken, 1, "expression statement");	
-		if(checkCurrentToken(Token.T_SEMICOLON)){
-			es.setChild(0, empty());
+	private ParseTreeNode declarationList() throws BPLException{
+		if(debug){
+			System.out.println("DECLARATION LIST");
+		}
+		ParseTreeNode dl = new ParseTreeNode(currentToken, 2, "declaration list");
+		dl.setChild(0, declaration());
+		if(checkCurrentToken(Token.T_EOF)){
+			return dl;
+		}
+		dl.setChild(1, declarationList());
+		return dl;
+	}
+
+	private ParseTreeNode declaration() throws BPLException{
+		if(debug){
+			System.out.println("DECLARATION");
+		}
+		ParseTreeNode d = new ParseTreeNode(currentToken, 1, "declaration");
+		if(!checkCurrentToken(Token.T_INT) && !checkCurrentToken(Token.T_VOID) && !checkCurrentToken(Token.T_STRING)){
+			throw new BPLException(currentToken.lineNumber, "Missing 'int' or 'void' or 'string'");
+		}
+		ungetCurrentToken();
+		getCurrentTokenWhileCached();
+		if(!checkCurrentToken(Token.T_ID)){
+			throw new BPLException(currentToken.lineNumber, "Missing '<id>'");
+		}
+		ungetCurrentToken();
+		getCurrentTokenWhileCached();
+		if(checkCurrentToken(Token.T_LPAREN)){
+			ungetCurrentToken();
+			getCurrentToken();
+			d.setChild(0, funDec());
 		}
 		else{
-			es.setChild(0, expression());
+			ungetCurrentToken();
 			getCurrentToken();
+			d.setChild(0, varDec());
 		}
-		if(!checkCurrentToken(Token.T_SEMICOLON)){
-			throw new BPLException(currentToken.lineNumber, "Missing ;");
-		}
-		getCurrentToken();
-		return es;
+		return d;
 	}
 
 	private ParseTreeNode typeSpecifier() throws BPLException{
-		if(!checkCurrentToken(Token.T_INT) || checkCurrentToken(Token.T_VOID) || checkCurrentToken(Token.T_STRING)){
+		if(debug){
+			System.out.println("TYPE SPECIFIER");
+		}
+		ParseTreeNode ts = new ParseTreeNode(currentToken, 1, "type specifier");
+		if(!checkCurrentToken(Token.T_INT) && !checkCurrentToken(Token.T_VOID) && !checkCurrentToken(Token.T_STRING)){
 			throw new BPLException(currentToken.lineNumber, "Missing 'int' or 'void' or 'string'");
 		}
-		return new ParseTreeNode(currentToken, 0, currentToken.tokenString);
+		ts.setChild(0, new ParseTreeNode(currentToken, 0, currentToken.tokenString));
+		return ts;
+	}
+
+	private ParseTreeNode funDec() throws BPLException{
+		if(debug){
+			System.out.println("FUN DEC");
+		}
+		ParseTreeNode fd = new ParseTreeNode(currentToken, 4, "fun dec");
+		fd.setChild(0, typeSpecifier());
+		getCurrentToken();
+		fd.setChild(1, id());
+		getCurrentToken();
+		if(!checkCurrentToken(Token.T_LPAREN)){
+			throw new BPLException(currentToken.lineNumber, "Missing '('");
+		}
+		getCurrentToken();
+		fd.setChild(2, params());
+		if(!checkCurrentToken(Token.T_RPAREN)){
+			throw new BPLException(currentToken.lineNumber, "Missing ')'");
+		}
+		getCurrentToken();
+		fd.setChild(3, compoundStatement());
+		return fd;
+	}
+
+	private ParseTreeNode params() throws BPLException{
+		if(debug){
+			System.out.println("PARAMS");
+		}
+		ParseTreeNode p = new ParseTreeNode(currentToken, 1, "params");
+		if(checkCurrentToken(Token.T_VOID)){
+			p.setChild(0, tvoid());
+			getCurrentToken();
+			return p;
+		}
+		p.setChild(0, paramList());
+		return p;
+	}
+
+	private ParseTreeNode paramList() throws BPLException{
+		if(debug){
+			System.out.println("PARAM LIST");
+		}
+		ParseTreeNode pl = new ParseTreeNode(currentToken, 2, "param list");
+		pl.setChild(0, param());
+		if(checkCurrentToken(Token.T_RPAREN)){
+			return pl;
+		}
+		if(!checkCurrentToken(Token.T_COMMA)){
+			throw new BPLException(currentToken.lineNumber, "Missing ','");
+		}
+		getCurrentToken();
+		pl.setChild(1, paramList());
+		return pl;
+	}
+
+	private ParseTreeNode param() throws BPLException{
+		if(debug){
+			System.out.println("PARAM");
+		}
+		ParseTreeNode p = new ParseTreeNode(currentToken, 4, "param");
+		if(!checkCurrentToken(Token.T_INT) && !checkCurrentToken(Token.T_VOID) && !checkCurrentToken(Token.T_STRING)){
+			throw new BPLException(currentToken.lineNumber, "Missing 'int' or 'void' or 'string'");
+		}
+		p.setChild(0, typeSpecifier());
+		getCurrentToken();
+		if(checkCurrentToken(Token.T_STAR)){
+			p.setChild(1, star());
+			getCurrentToken();
+			p.setChild(2, id());
+		}
+		else{
+			p.setChild(1, id());
+			getCurrentToken();
+			if(checkCurrentToken(Token.T_LBRACKET)){
+				p.setChild(2, new ParseTreeNode(currentToken, 0, currentToken.tokenString));
+				getCurrentToken();
+				if(!checkCurrentToken(Token.T_RBRACKET)){
+					throw new BPLException(currentToken.lineNumber, "Missing ']'");
+				}
+				p.setChild(3, new ParseTreeNode(currentToken, 0, currentToken.tokenString));
+				getCurrentToken();
+			}
+		}
+		return p;
 	}
 
 	private ParseTreeNode varDec() throws BPLException{
-		ParseTreeNode vd = new ParseTreeNode(currentToken, 3, "var dec");
+		if(debug){
+			System.out.println("VAR DEC");
+		}
+		ParseTreeNode vd = new ParseTreeNode(currentToken, 5, "var dec");
 		vd.setChild(0, typeSpecifier());
 		getCurrentToken();
 		if(checkCurrentToken(Token.T_STAR)){
 			vd.setChild(1, star());
+			getCurrentToken();
 			vd.setChild(2, id());
+			getCurrentToken();
 			return vd;
 		}
 		else{
@@ -105,12 +242,14 @@ public class BPLParser{
 			else if(!checkCurrentToken(Token.T_LBRACKET)){
 				throw new BPLException(currentToken.lineNumber, "Missing '['");
 			}
+			vd.setChild(2, new ParseTreeNode(currentToken, 0, currentToken.tokenString));
 			getCurrentToken();
-			vd.setChild(2, num());
+			vd.setChild(3, num());
 			getCurrentToken();
 			if(!checkCurrentToken(Token.T_RBRACKET)){
 				throw new BPLException(currentToken.lineNumber, "Missing ']'");
 			}
+			vd.setChild(4, new ParseTreeNode(currentToken, 0, currentToken.tokenString));
 			getCurrentToken();
 			if(!checkCurrentToken(Token.T_SEMICOLON)){
 				throw new BPLException(currentToken.lineNumber, "Missing ';'");
@@ -121,8 +260,11 @@ public class BPLParser{
 	}
 
 	private ParseTreeNode localDecs() throws BPLException{
+		if(debug){
+			System.out.println("LOCAL DECS");
+		}
 		ParseTreeNode ld = new ParseTreeNode(currentToken, 2, "local decs");
-		if(!checkCurrentToken(Token.T_INT) || checkCurrentToken(Token.T_VOID) || checkCurrentToken(Token.T_STRING)){
+		if(!checkCurrentToken(Token.T_INT) && !checkCurrentToken(Token.T_VOID) && !checkCurrentToken(Token.T_STRING)){
 			ld.setChild(0, empty());
 		}
 		else{
@@ -133,6 +275,9 @@ public class BPLParser{
 	}
 
 	private ParseTreeNode compoundStatement() throws BPLException{
+		if(debug){
+			System.out.println("COMPOUND STATEMENT");
+		}
 		if(!checkCurrentToken(Token.T_LCURLY)){
 			throw new BPLException(currentToken.lineNumber, "Missing {");
 		}
@@ -143,10 +288,14 @@ public class BPLParser{
 		if(!checkCurrentToken(Token.T_RCURLY)){
 			throw new BPLException(currentToken.lineNumber, "Missing }");
 		}
+		getCurrentToken();
 		return cs;
 	}
 
 	private ParseTreeNode ifStatement() throws BPLException{
+		if(debug){
+			System.out.println("IF STATEMENT");
+		}
 		if(!checkCurrentToken(Token.T_IF)){
 			throw new BPLException(currentToken.lineNumber, "Missing if");
 		}
@@ -170,6 +319,9 @@ public class BPLParser{
 	}
 
 	private ParseTreeNode whileStatement() throws BPLException{
+		if(debug){
+			System.out.println("WHILE STATEMENT");
+		}
 		if(!checkCurrentToken(Token.T_WHILE)){
 			throw new BPLException(currentToken.lineNumber, "Missing while");
 		}
@@ -190,6 +342,9 @@ public class BPLParser{
 	}
 
 	private ParseTreeNode returnStatement() throws BPLException{
+		if(debug){
+			System.out.println("RETURN STATEMENT");
+		}
 		if(!checkCurrentToken(Token.T_RETURN)){
 			throw new BPLException(currentToken.lineNumber, "Missing return");
 		}
@@ -203,6 +358,9 @@ public class BPLParser{
 	}
 
 	private ParseTreeNode writeStatement() throws BPLException{
+		if(debug){
+			System.out.println("WRITE STATEMENT");
+		}
 		if(!checkCurrentToken(Token.T_WRITE) && !checkCurrentToken(Token.T_WRITELN)){
 			throw new BPLException(currentToken.lineNumber, "Missing 'write' or 'writeln'");
 		}
@@ -234,10 +392,14 @@ public class BPLParser{
 		if(!checkCurrentToken(Token.T_SEMICOLON)){
 			throw new BPLException(currentToken.lineNumber, "Missing ';'");
 		}
+		getCurrentToken();
 		return w;
 	}
 
 	private ParseTreeNode statementList() throws BPLException{
+		if(debug){
+			System.out.println("STATEMENT LIST");
+		}
 		ParseTreeNode sl = new ParseTreeNode(currentToken, 2, "statement list");
 		if(checkCurrentToken(Token.T_RCURLY)){
 			sl.setChild(0, empty());
@@ -250,6 +412,9 @@ public class BPLParser{
 	}
 
 	private ParseTreeNode statement() throws BPLException{
+		if(debug){
+			System.out.println("STATEMENT");
+		}
 		ParseTreeNode s = new ParseTreeNode(currentToken, 1, "statement");
 		if(checkCurrentToken(Token.T_LCURLY)){
 			s.setChild(0, compoundStatement());
@@ -272,13 +437,39 @@ public class BPLParser{
 		return s;
 	}
 
+
+	private ParseTreeNode expressionStatement() throws BPLException{
+		if(debug){
+			System.out.println("EXPRESSION STATEMENT");
+		}
+		ParseTreeNode es = new ParseTreeNode(currentToken, 1, "expression statement");	
+		if(checkCurrentToken(Token.T_SEMICOLON)){
+			es.setChild(0, empty());
+		}
+		else{
+			es.setChild(0, expression());
+			getCurrentToken();
+		}
+		if(!checkCurrentToken(Token.T_SEMICOLON)){
+			throw new BPLException(currentToken.lineNumber, "Missing ;");
+		}
+		getCurrentToken();
+		return es;
+	}
+
 	private ParseTreeNode expression() throws BPLException{
+		if(debug){
+			System.out.println("EXPRESSION");
+		}
 		ParseTreeNode e = new ParseTreeNode(currentToken, 1, "expression");
 		e.setChild(0, id());
 		return e;
 	}
 
 	private ParseTreeNode id() throws BPLException{
+		if(debug){
+			System.out.println("ID");
+		}
 		if(!checkCurrentToken(Token.T_ID)){
 			throw new BPLException(currentToken.lineNumber, "Missing '<id>'");
 		}
@@ -286,6 +477,9 @@ public class BPLParser{
 	}
 
 	private ParseTreeNode num() throws BPLException{
+		if(debug){
+			System.out.println("NUM");
+		}
 		if(!checkCurrentToken(Token.T_NUM)){
 			throw new BPLException(currentToken.lineNumber, "Missing '<num>'");
 		}
@@ -293,13 +487,29 @@ public class BPLParser{
 	}
 
 	private ParseTreeNode star() throws BPLException{
+		if(debug){
+			System.out.println("STAR");
+		}
 		if(!checkCurrentToken(Token.T_STAR)){
 			throw new BPLException(currentToken.lineNumber, "Missing '*'");
 		}
 		return new ParseTreeNode(currentToken, 0, currentToken.tokenString);
 	}
 
+	private ParseTreeNode tvoid() throws BPLException{
+		if(debug){
+			System.out.println("VOID");
+		}
+		if(!checkCurrentToken(Token.T_VOID)){
+			throw new BPLException(currentToken.lineNumber, "Missing 'void'");
+		}
+		return new ParseTreeNode(currentToken, 0, "void");
+	}
+
 	private ParseTreeNode empty(){
+		if(debug){
+			System.out.println("EMPTY");
+		}
 		return new ParseTreeNode(currentToken, 0, "empty");
 	}
 

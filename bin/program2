@@ -1,0 +1,5 @@
+string arr[10];
+
+string test(int x, string y){
+	return y;
+}
