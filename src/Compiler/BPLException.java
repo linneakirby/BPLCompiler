@@ -10,7 +10,7 @@ public class BPLException extends Exception{
 	}
 
 	public BPLException(int lineNumber, String message){
-		super("Line "+lineNumber+": "+message);
+		super("Exception in line "+lineNumber+": "+message);
 	}
 
 }
