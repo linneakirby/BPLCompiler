@@ -1,3 +1,5 @@
 void x (void) {
-	write (y);
+
+
+	write (y+2);
 }

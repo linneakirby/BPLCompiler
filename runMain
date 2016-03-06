@@ -2,4 +2,4 @@
 cd bin
 #java Compiler.BPLScanner factorial.bpl
 #java Compiler.BPLScanner while.txt
-java Compiler.BPLParser program2.txt
+java Compiler.BPLParser program.txt

@@ -550,10 +550,14 @@ public class BPLParser{
 		}
 		ParseTreeNode ce = new ParseTreeNode(currentToken, 3, "comp exp");
 		ce.setChild(0, e());
+		getCurrentToken();
 		if(checkCurrentToken(Token.T_LESSEQ) || checkCurrentToken(Token.T_LESS) || checkCurrentToken(Token.T_EQEQ)
 		 || checkCurrentToken(Token.T_NOTEQ) || checkCurrentToken(Token.T_GREATER) || checkCurrentToken(Token.T_GREATEREQ)){
 			ce.setChild(1, relop());
 			ce.setChild(2, e());
+		}
+		else{
+			ungetCurrentToken();
 		}
 		return ce;
 	}
@@ -578,9 +582,13 @@ public class BPLParser{
 		}
 		ParseTreeNode ee = new ParseTreeNode(currentToken, 3, "E");
 		ee.setChild(0, t());
+		getCurrentToken();
 		if(checkCurrentToken(Token.T_PLUS) || checkCurrentToken(Token.T_MINUS)){
 			ee.setChild(1, addop());
 			ee.setChild(2, e());
+		}
+		else{
+			ungetCurrentToken();
 		}
 		return ee;
 	}
@@ -604,9 +612,13 @@ public class BPLParser{
 		}
 		ParseTreeNode tt = new ParseTreeNode(currentToken, 3, "T");
 		tt.setChild(0, f());
+		getCurrentToken();
 		if(checkCurrentToken(Token.T_STAR) || checkCurrentToken(Token.T_SLASH) || checkCurrentToken(Token.T_PERCENT)){
 			tt.setChild(1, mulop());
 			tt.setChild(2, t());
+		}
+		else{
+			ungetCurrentToken();
 		}
 		return tt;
 	}

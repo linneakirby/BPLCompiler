@@ -49,6 +49,11 @@ public class BPLScanner{
 	private void getCurrentLine(){
 		if(filescan.hasNextLine()){
 			currentLine = filescan.nextLine().trim();
+			while(currentLine.equals("")){
+				currentLine = filescan.nextLine().trim();
+				peekIndex = 0;
+				lineNumber++;
+			}
 			peekIndex = 0;
 			lineNumber++;
 			//System.out.println("lineNumber is now: "+lineNumber);
