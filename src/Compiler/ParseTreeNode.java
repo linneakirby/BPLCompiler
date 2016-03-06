@@ -54,7 +54,7 @@ public class ParseTreeNode{
 			for(int i=0; i<depth; i++){
 				nodeString.append("\t");
 			}
-			nodeString.append("}\n");
+			nodeString.append("\t}\n");
 		}
 		return nodeString;
 	}
