@@ -1,1 +1,4 @@
-{x; y; z;}
+void main(void){
+	int a;
+	a = x + y + z;
+}

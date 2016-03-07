@@ -261,6 +261,7 @@ public class BPLParser{
 			p.setChild(1, star());
 			getCurrentToken();
 			p.setChild(2, id());
+			getCurrentToken();
 		}
 		else{
 			p.setChild(1, id());
