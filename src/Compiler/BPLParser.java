@@ -14,7 +14,8 @@ public class BPLParser{
 	private Token currentToken;
 	private LinkedList<Token> cachedTokens;
 
-	public boolean debug = true;
+	//MAKE THIS BOOLEAN TRUE FOR DEBUGGING
+	public boolean debug = false;
 
 	public BPLParser(String filename) throws BPLException{
 		scanner = new BPLScanner(filename);
@@ -53,6 +54,22 @@ public class BPLParser{
 		catch (Exception e){
 			System.out.println(e.toString());
 		}
+	}
+
+	public void getTokenFromCache(int index){
+		try{
+			currentToken = cachedTokens.remove(index);
+			if(debug){
+				System.out.println(currentToken.tokenString);
+			}
+		}
+		catch (Exception e){
+			System.out.println(e.toString());
+		}
+	}
+
+	private void ungetCurrentToken(int index){
+		cachedTokens.add(index, currentToken);
 	}
 
 	private void ungetCurrentToken(){
@@ -345,10 +362,10 @@ public class BPLParser{
 		}
 		else{
 			es.setChild(0, expression());
-			getCurrentToken();
+			//getCurrentToken();
 		}
 		if(!checkCurrentToken(Token.T_SEMICOLON)){
-			throw new BPLException(currentToken.lineNumber, "Missing ;");
+			throw new BPLException(currentToken.lineNumber, "Missing ';'");
 		}
 		getCurrentToken();
 		return es;
@@ -359,22 +376,23 @@ public class BPLParser{
 			System.out.println("IF STATEMENT");
 		}
 		if(!checkCurrentToken(Token.T_IF)){
-			throw new BPLException(currentToken.lineNumber, "Missing if");
+			throw new BPLException(currentToken.lineNumber, "Missing 'if'");
 		}
 		ParseTreeNode i = new ParseTreeNode(currentToken, 3, "if statement");
 		getCurrentToken();
 		if(!checkCurrentToken(Token.T_LPAREN)){
-			throw new BPLException(currentToken.lineNumber, "Missing (");
+			throw new BPLException(currentToken.lineNumber, "Missing '('");
 		}
 		getCurrentToken();
 		i.setChild(0, expression());
-		getCurrentToken();
+		//getCurrentToken();
 		if(!checkCurrentToken(Token.T_RPAREN)){
-			throw new BPLException(currentToken.lineNumber, "Missing )");
+			throw new BPLException(currentToken.lineNumber, "Missing ')'");
 		}
 		getCurrentToken();
 		i.setChild(1, statement());
 		if(checkCurrentToken(Token.T_ELSE)){
+			getCurrentToken();
 			i.setChild(2, statement());
 		}
 		return i;
@@ -394,7 +412,7 @@ public class BPLParser{
 		}
 		getCurrentToken();
 		w.setChild(0, expression());
-		getCurrentToken();
+		//getCurrentToken();
 		if(!checkCurrentToken(Token.T_RPAREN)){
 			throw new BPLException(currentToken.lineNumber, "Missing ')'");
 		}
@@ -416,7 +434,7 @@ public class BPLParser{
 			return ret;
 		}
 		ret.setChild(0, expression());
-		getCurrentToken();
+		//getCurrentToken();
 		if(!checkCurrentToken(Token.T_SEMICOLON)){
 			throw new BPLException(currentToken.lineNumber, "Missing ';'");
 		}
@@ -451,7 +469,7 @@ public class BPLParser{
 			return w;
 		}
 		w.setChild(0, expression());
-		getCurrentToken();
+		//getCurrentToken();
 		if(!checkCurrentToken(Token.T_RPAREN)){
 			throw new BPLException(currentToken.lineNumber, "Missing ')'");
 		}
@@ -473,15 +491,23 @@ public class BPLParser{
 		/*if(checkCurrentToken(Token.T_ID)){
 			e.setChild(0, id());
 		}*/
-		while((!checkCurrentToken(Token.T_LPAREN) && !checkCurrentToken(Token.T_LBRACKET) && !checkCurrentToken(Token.T_SEMICOLON)) && !expressionTokens.empty()){
+		while(!checkCurrentToken(Token.T_SEMICOLON)){
 			if(expressionTokens.empty()){
 				if(checkCurrentToken(Token.T_LPAREN) || checkCurrentToken(Token.T_LBRACKET)){
 					expressionTokens.push(currentToken);
 				}
+				else if(checkCurrentToken(Token.T_RPAREN) || checkCurrentToken(Token.T_RBRACKET)){
+					break;
+				}
 				else if(checkCurrentToken(Token.T_EQ)){
+					tokens.add(currentToken);
+					while(cachedTokens.size() > 0){
+						tokens.add(cachedTokens.remove());
+					}
 					while(tokens.size() > 0){
 						cachedTokens.add(tokens.remove());
 					}
+					getCurrentToken();
 					e.setChild(0, var());
 					if(!checkCurrentToken(Token.T_EQ)){
 						throw new BPLException(currentToken.lineNumber, "Missing '='");
@@ -499,20 +525,25 @@ public class BPLParser{
 				}
 				else if(checkCurrentToken(Token.T_RPAREN) || checkCurrentToken(Token.T_RBRACKET)){
 					Token parenbracket = expressionTokens.pop();
-					if(!(checkCurrentToken(Token.T_RPAREN) && (parenbracket.type == Token.T_LPAREN))){
-						throw new BPLException(currentToken.lineNumber, "Missing '(' or '))'");
+					if((!(checkCurrentToken(Token.T_RPAREN)) && (parenbracket.type == Token.T_LPAREN))){
+						throw new BPLException(currentToken.lineNumber, "Missing '(' or ')'");
 					}
-					else if(!(checkCurrentToken(Token.T_RBRACKET) && (parenbracket.type == Token.T_LBRACKET))){
-						throw new BPLException(currentToken.lineNumber, "Missing '[' or ']]'");
+					else if((!(checkCurrentToken(Token.T_RBRACKET)) && (parenbracket.type == Token.T_LBRACKET))){
+						throw new BPLException(currentToken.lineNumber, "Missing '[' or ']'");
 					}
 				}
 				tokens.add(currentToken);
 				getCurrentToken();
 			}
 		}
+		tokens.add(currentToken);
+		while(cachedTokens.size() > 0){
+			tokens.add(cachedTokens.remove());
+		}
 		while(tokens.size() > 0){
 			cachedTokens.add(tokens.remove());
 		}
+		getCurrentToken();
 		e.setChild(0, compExp());
 		return e;
 	}
@@ -555,10 +586,12 @@ public class BPLParser{
 		 || checkCurrentToken(Token.T_NOTEQ) || checkCurrentToken(Token.T_GREATER) || checkCurrentToken(Token.T_GREATEREQ)){
 			ce.setChild(1, relop());
 			ce.setChild(2, e());
+			getCurrentToken();
 		}
-		else{
-			ungetCurrentToken();
-		}
+		/*else{
+			ungetCurrentToken(0);
+			getCurrentToken();
+		}*/
 		return ce;
 	}
 
@@ -588,7 +621,8 @@ public class BPLParser{
 			ee.setChild(2, e());
 		}
 		else{
-			ungetCurrentToken();
+			ungetCurrentToken(0);
+			//getCurrentToken();
 		}
 		return ee;
 	}
@@ -618,7 +652,8 @@ public class BPLParser{
 			tt.setChild(2, t());
 		}
 		else{
-			ungetCurrentToken();
+			ungetCurrentToken(0);
+			//getCurrentToken();
 		}
 		return tt;
 	}
@@ -697,15 +732,15 @@ public class BPLParser{
 			//getCurrentToken();
 		}
 		else{
-			ungetCurrentToken();
-			getCurrentTokenWhileCached();
+			ungetCurrentToken(0);
+			getTokenFromCache(1);
 			if(checkCurrentToken(Token.T_LPAREN)){
-				ungetCurrentToken();
+				ungetCurrentToken(1);
 				getCurrentToken();
 				f.setChild(0, funCall());
 			}
 			else if(checkCurrentToken(Token.T_LBRACKET)){
-				ungetCurrentToken();
+				ungetCurrentToken(1);
 				getCurrentToken();
 				f.setChild(0, id());
 				getCurrentToken();
@@ -716,7 +751,7 @@ public class BPLParser{
 				}
 			}
 			else{
-				ungetCurrentToken();
+				ungetCurrentToken(1);
 				getCurrentToken();
 				f.setChild(0, id());
 				//getCurrentToken();
@@ -740,7 +775,7 @@ public class BPLParser{
 		if(!checkCurrentToken(Token.T_RPAREN)){
 			throw new BPLException(currentToken.lineNumber, "Missing ')'");
 		}
-		getCurrentToken();
+		//getCurrentToken();
 		return fc;
 	}
 
