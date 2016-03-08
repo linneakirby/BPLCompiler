@@ -8,7 +8,7 @@ import java.lang.String;
 
 public class ParseTreeNode{
 	private int lineNumber;
-	private String kind;
+	public String kind;
 	private ParseTreeNode[] children;
 	private int numchildren;
 	private ParseTreeNode next;
@@ -42,10 +42,10 @@ public class ParseTreeNode{
 			nodeString.append("   ");
 		}
 		if(children.length == 0){
-			nodeString.append(kind+"  {}\n");
+			nodeString.append(kind+"   {}\n");
 		}
 		else{
-			nodeString.append(kind+"  {\n");
+			nodeString.append(kind+"   {\n");
 			for (ParseTreeNode child:children) {
 				if(child != null){
 					child.toStringHelper(nodeString, depth+1);
@@ -54,7 +54,7 @@ public class ParseTreeNode{
 			for(int i=0; i<depth; i++){
 				nodeString.append("   ");
 			}
-			nodeString.append("   }\n");
+			nodeString.append("        }\n");
 		}
 		return nodeString;
 	}

@@ -1,5 +1,10 @@
 BPL Compiler - Linnea Kirby
 
+To use the Parser:
+	1. Run "make" to compile the files (the .class files will be located in the bin/Compiler/ folder)
+	2. runMain will run the parser's main() function. Just change the name of the file you want to run
+	and make sure it's in the bin/ folder.
+
 To use the Scanner:
 	1. Since there is a Makefile, just run "make" to get the .class files
 	They will be located in the bin/Compiler/ folder

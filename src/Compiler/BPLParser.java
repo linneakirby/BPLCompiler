@@ -615,15 +615,24 @@ public class BPLParser{
 			System.out.println("E");
 		}
 		ParseTreeNode ee = new ParseTreeNode(currentToken, 3, "E");
-		ee.setChild(0, t());
+		ee.setChild(2, t());
+		//ParseTreeNode tt = t();
 		getCurrentToken();
 		if(checkCurrentToken(Token.T_PLUS) || checkCurrentToken(Token.T_MINUS)){
-			ee.setChild(1, addop());
-			ee.setChild(2, e());
+			ParseTreeNode ao = addop();
+			ParseTreeNode ee2 = e();
+			ParseTreeNode temp = ee2;
+			while((temp.getChild(0) != null) && (temp.getChild(0).kind == "E")){
+				temp = temp.getChild(0);
+			}
+			temp.setChild(0, ee);
+			temp.setChild(1, ao);
+			return ee2;
+			//ee.setChild(1, addop());
+			//ee.setChild(2, e());
 		}
 		else{
 			ungetCurrentToken(0);
-			//getCurrentToken();
 		}
 		return ee;
 	}
@@ -646,11 +655,20 @@ public class BPLParser{
 			System.out.println("T");
 		}
 		ParseTreeNode tt = new ParseTreeNode(currentToken, 3, "T");
-		tt.setChild(0, f());
+		tt.setChild(2, f());
 		getCurrentToken();
 		if(checkCurrentToken(Token.T_STAR) || checkCurrentToken(Token.T_SLASH) || checkCurrentToken(Token.T_PERCENT)){
-			tt.setChild(1, mulop());
-			tt.setChild(2, t());
+			ParseTreeNode mo = mulop();
+			ParseTreeNode tt2 = t();
+			ParseTreeNode temp = tt2;
+			while((temp.getChild(0) != null) && (temp.getChild(0).kind == "T")){
+				temp = temp.getChild(0);
+			}
+			temp.setChild(0, tt);
+			temp.setChild(1, mo);
+			return tt2;
+			//tt.setChild(1, mulop());
+			//tt.setChild(2, t());
 		}
 		else{
 			ungetCurrentToken(0);
