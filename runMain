@@ -1,4 +1,4 @@
 #!/bin/bash
 cd bin
 #java Compiler.BPLScanner example1.txt
-java Compiler.BPLParser xyz.txt
+java Compiler.BPLParser P1.bpl

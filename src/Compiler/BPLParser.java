@@ -284,14 +284,14 @@ public class BPLParser{
 			System.out.println("COMPOUND STATEMENT");
 		}
 		if(!checkCurrentToken(Token.T_LCURLY)){
-			throw new BPLException(currentToken.lineNumber, "Missing {");
+			throw new BPLException(currentToken.lineNumber, "Missing '{'");
 		}
 		ParseTreeNode cs = new ParseTreeNode(currentToken, 2, "compound statement");
 		getCurrentToken();
 		cs.setChild(0, localDecs());
 		cs.setChild(1, statementList());
 		if(!checkCurrentToken(Token.T_RCURLY)){
-			throw new BPLException(currentToken.lineNumber, "Missing }");
+			throw new BPLException(currentToken.lineNumber, "Missing '}'");
 		}
 		getCurrentToken();
 		return cs;
@@ -317,7 +317,10 @@ public class BPLParser{
 			System.out.println("STATEMENT LIST");
 		}
 		ParseTreeNode sl = new ParseTreeNode(currentToken, 2, "statement list");
-		if(checkCurrentToken(Token.T_RCURLY)){
+		if(checkCurrentToken(Token.T_EOF)){
+			throw new BPLException(currentToken.lineNumber, "Missing '}'");
+		}
+		else if(checkCurrentToken(Token.T_RCURLY)){
 			sl.setChild(0, empty());
 		}
 		else{
@@ -516,6 +519,9 @@ public class BPLParser{
 					getCurrentToken();
 					e.setChild(1, expression());
 					return e;
+				}
+				else if(!checkCurrentToken(Token.T_ID)){
+					break;
 				}
 				tokens.add(currentToken);
 				getCurrentToken();
@@ -752,7 +758,12 @@ public class BPLParser{
 		}
 		else{
 			ungetCurrentToken(0);
-			getTokenFromCache(1);
+			if(cachedTokens.size() > 1){
+				getTokenFromCache(1);
+			}
+			else{
+				getCurrentTokenWhileCached();
+			}
 			if(checkCurrentToken(Token.T_LPAREN)){
 				ungetCurrentToken(1);
 				getCurrentToken();

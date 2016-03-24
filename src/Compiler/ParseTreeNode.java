@@ -11,7 +11,7 @@ public class ParseTreeNode{
 	public String kind;
 	private ParseTreeNode[] children;
 	private int numchildren;
-	private ParseTreeNode next;
+	private ParseTreeNode declaration;
 
 	public ParseTreeNode(Token tok, int numchildren, String kind){
 		this.lineNumber = tok.lineNumber;
@@ -28,12 +28,12 @@ public class ParseTreeNode{
 		children[i] = child;
 	}
 
-	public ParseTreeNode getNext(){
-		return next;
+	public ParseTreeNode getDeclaration(){
+		return declaration;
 	}
 
-	public void setNext(ParseTreeNode next){
-		this.next = next;
+	public void setDeclaration(ParseTreeNode dec){
+		this.declaration = dec;
 	}
 
 	public StringBuilder toStringHelper(StringBuilder nodeString, int depth){
