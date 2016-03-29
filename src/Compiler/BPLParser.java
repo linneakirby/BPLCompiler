@@ -844,7 +844,9 @@ public class BPLParser{
 		if(!checkCurrentToken(Token.T_ID)){
 			throw new BPLException(currentToken.lineNumber, "Missing '<id>'");
 		}
-		return new ParseTreeNode(currentToken, 0, currentToken.tokenString);
+		ParseTreeNode i = new ParseTreeNode(currentToken, 1, "id");
+		i.setChild(0, new ParseTreeNode(currentToken, 0, currentToken.tokenString));
+		return i;
 	}
 
 	private ParseTreeNode num() throws BPLException{

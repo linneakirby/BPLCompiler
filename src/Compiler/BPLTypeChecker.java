@@ -22,7 +22,7 @@ public class BPLTypeChecker{
 		bottomUpPass();
 	}
 
-	private void topDownPass(ParseTreeNode root){
+	private void topDownPass(ParseTreeNode root) throws BPLException{
 		ParseTreeNode declarationlist = root.getChild(0);
 		ParseTreeNode d;
 		ParseTreeNode child;
@@ -45,7 +45,7 @@ public class BPLTypeChecker{
 
 	}
 
-	private boolean checkFunDec(ParseTreeNode root){
+	private boolean checkFunDec(ParseTreeNode root) throws BPLException{
 		if(root.kind == "fun dec"){
 			putGlobalDec(root);
 			localDecs = new LinkedList<ParseTreeNode>();
@@ -55,7 +55,7 @@ public class BPLTypeChecker{
 				localDecs.add(p);
 				paramlist = p.getChild(1);
 				if(debug){
-					System.out.println("Adding "+p.kind.toUpperCase()+" \""+p.getChild(1).kind+"\" to the local declarations");
+					System.out.println("Adding "+p.kind.toUpperCase()+" \""+p.getChild(1).getChild(0).kind+"\" to the local declarations");
 				}
 			}
 			for(ParseTreeNode child:root.getChildren()){
@@ -76,13 +76,17 @@ public class BPLTypeChecker{
 		return false;
 	}
 
-	private void checkReference(ParseTreeNode child){
+	private void checkReference(ParseTreeNode child) throws BPLException{
+		boolean referenceFound = false;
 		ParseTreeNode dec = symbolTable.get(child.kind);
-		if(dec != null && child.getLineNumber() != dec.getLineNumber()){
-			child.setDeclaration(dec);
-			if(debug){
-				System.out.println("Connecting global declaration to "+child.kind+" referenced on line "+child.getLineNumber());
+		if(dec != null){
+			if(child.getLineNumber() != dec.getLineNumber()){
+				child.setDeclaration(dec);
+				if(debug){
+					System.out.println("Connecting global declaration to "+child.kind+" referenced on line "+child.getLineNumber());
+				}
 			}
+			referenceFound = true;
 		}
 		for(int i=0; i<localDecs.size(); i++){
 			dec = localDecs.get(i);
@@ -92,12 +96,19 @@ public class BPLTypeChecker{
 				i++;
 				decChild = dec.getChild(i);
 			}
-			if(decChild.kind.equals(child.kind) && child.getLineNumber() != dec.getLineNumber()){
-				child.setDeclaration(dec);
-				if(debug){
-					System.out.println("Connecting local declaration to "+child.kind+" referenced on line "+child.getLineNumber());
+			decChild = decChild.getChild(0);
+			if(decChild.kind.equals(child.kind)){
+				if(child.getLineNumber() != dec.getLineNumber()){
+					child.setDeclaration(dec);
+					if(debug){
+						System.out.println("Connecting local declaration to "+child.getChild(0).kind+" referenced on line "+child.getLineNumber());
+					}
 				}
+				referenceFound = true;
 			}
+		}
+		if(!referenceFound && child.kind.equals("id")){
+			throw new BPLException(child.getChild(0).kind+" on line "+child.getLineNumber()+" is undeclared!");
 		}
 	}
 
@@ -108,13 +119,13 @@ public class BPLTypeChecker{
 			i++;
 			child = root.getChild(i);
 		}
-		symbolTable.put(child.kind, root);
+		symbolTable.put(child.getChild(0).kind, root);
 			if(debug){
-				System.out.println("Adding "+root.kind.toUpperCase()+" \""+child.kind+"\" to the global symbol table");
+				System.out.println("Adding "+root.kind.toUpperCase()+" \""+child.getChild(0).kind+"\" to the global symbol table");
 			}
 	}
 
-	private boolean checkLocalDecOrReference(ParseTreeNode child){
+	private boolean checkLocalDecOrReference(ParseTreeNode child) throws BPLException{
 		if(child.kind == "var dec"){
 			putLocalDec(child);
 			return true;
@@ -137,7 +148,7 @@ public class BPLTypeChecker{
 			}
 			localDecs.add(root);
 			if(debug){
-				System.out.println("Adding "+root.kind.toUpperCase()+" \""+child.kind+"\" to the local declarations");
+				System.out.println("Adding "+root.kind.toUpperCase()+" \""+child.getChild(0).kind+"\" to the local declarations");
 			}
 	}
 
