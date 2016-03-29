@@ -23,14 +23,18 @@ public class BPLTypeChecker{
 	}
 
 	private void topDownPass(ParseTreeNode root){
-		if(!checkVarDec(root)){
-			checkFunDec(root);
-		}
-		for(ParseTreeNode child:root.getChildren()){
-			if(child != null){
-				//System.out.println(child.kind);
-				topDownPass(child);
+		ParseTreeNode declarationlist = root.getChild(0);
+		while(declarationlist.getChild(1) != null){
+			ParseTreeNode d = declarationlist.getChild(0);
+			System.out.println(d.kind);
+			if(!checkVarDec(d.getChild(0))){
+				checkFunDec(d.getChild(0));
 			}
+			declarationlist = declarationlist.getChild(1);
+		}
+		ParseTreeNode d = declarationlist.getChild(0);
+		if(!checkVarDec(d.getChild(0))){
+			checkFunDec(d.getChild(0));
 		}
 	}
 
@@ -51,15 +55,19 @@ public class BPLTypeChecker{
 					System.out.println("Adding "+p.kind.toUpperCase()+" \""+p.getChild(1).kind+"\" to the local declarations");
 				}
 			}
+			for(ParseTreeNode child:root.getChildren()){
+				if(child != null){
+					checkLocalDec(child);
+				}
+			}
 			return true;
 		}
-
 		return false;
 	}
 
 	private boolean checkVarDec(ParseTreeNode root){
 		if(root.kind == "var dec"){
-			putGlobalDec(root);
+			//putGlobalDec(root);
 			return true;
 		}
 		return false;
@@ -78,6 +86,30 @@ public class BPLTypeChecker{
 			}
 	}
 
+	private void checkLocalDec(ParseTreeNode child){
+		if(child.kind == "var dec"){
+			putLocalDec(child);
+		}
+		for(ParseTreeNode grandchild:child.getChildren()){
+			if(grandchild != null){
+				checkLocalDec(grandchild);
+			}
+		}
+	}
+
+	private void putLocalDec(ParseTreeNode root){
+		int i = 1;
+		ParseTreeNode child = root.getChild(i);
+			while(child.kind == "*" || child.kind == "type specifier"){
+				i++;
+				child = root.getChild(i);
+			}
+			localDecs.add(root);
+			if(debug){
+				System.out.println("Adding "+root.kind.toUpperCase()+" \""+child.kind+"\" to the local declarations");
+			}
+	}
+
 
 	public static void main(String[ ] args) {
 		String filename ;
@@ -87,6 +119,7 @@ public class BPLTypeChecker{
 			myTypeChecker = new BPLTypeChecker(filename);
 		}
 		catch(ArrayIndexOutOfBoundsException e){
+			e.printStackTrace();
 			System.out.println("Please enter a filename! "+e.getMessage());
 		}
 		catch(BPLException b){
