@@ -16,7 +16,7 @@ public class BPLTypeChecker{
 	private LinkedList<ParseTreeNode> localDecs;
 
 	public BPLTypeChecker(String filename) throws BPLException{
-		parser = new BPLParser(filename);
+		BPLParser parser = new BPLParser(filename);
 		symbolTable = new HashMap<String, ParseTreeNode>();
 		topDownPass(parser.getParseTree());
 		bottomUpPass();
@@ -26,9 +26,9 @@ public class BPLTypeChecker{
 		if(!checkVarDec(root)){
 			checkFunDec(root);
 		}
-
-		for(ParseTreeNode child:root.children){
+		for(ParseTreeNode child:root.getChildren()){
 			if(child != null){
+				//System.out.println(child.kind);
 				topDownPass(child);
 			}
 		}
@@ -38,22 +38,50 @@ public class BPLTypeChecker{
 
 	}
 
+	private boolean checkFunDec(ParseTreeNode root){
+		if(root.kind == "fun dec"){
+			putGlobalDec(root);
+			localDecs = new LinkedList<ParseTreeNode>();
+			ParseTreeNode paramlist = root.getChild(2).getChild(0);
+			while(paramlist != null && paramlist.kind == "param list"){
+				ParseTreeNode p = paramlist.getChild(0);
+				localDecs.add(p);
+				paramlist = p.getChild(1);
+				if(debug){
+					System.out.println("Adding "+p.kind.toUpperCase()+" \""+p.getChild(1).kind+"\" to the local declarations");
+				}
+			}
+			return true;
+		}
+
+		return false;
+	}
+
 	private boolean checkVarDec(ParseTreeNode root){
 		if(root.kind == "var dec"){
-			ParseTreeNode child = root.getChild(1);
-			if(child.kind == "*"){
-				child = root.getChild(2);
-			}
-			symbolTable.put(child.kind, root);
+			putGlobalDec(root);
 			return true;
 		}
 		return false;
 	}
 
+	private void putGlobalDec(ParseTreeNode root){
+		int i = 1;
+		ParseTreeNode child = root.getChild(i);
+			while(child.kind == "*" || child.kind == "type specifier"){
+				i++;
+				child = root.getChild(i);
+			}
+			symbolTable.put(child.kind, root);
+			if(debug){
+				System.out.println("Adding "+root.kind.toUpperCase()+" \""+child.kind+"\" to the global symbol table");
+			}
+	}
+
 
 	public static void main(String[ ] args) {
 		String filename ;
-		BPLParser myTypeChecker;
+		BPLTypeChecker myTypeChecker;
 		try{
 			filename = args[0] ;
 			myTypeChecker = new BPLTypeChecker(filename);

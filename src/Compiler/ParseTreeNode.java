@@ -24,6 +24,10 @@ public class ParseTreeNode{
 		return children[i];
 	}
 
+	public ParseTreeNode[] getChildren(){
+		return children;
+	}
+
 	public void setChild(int i, ParseTreeNode child){
 		children[i] = child;
 	}
