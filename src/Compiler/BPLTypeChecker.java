@@ -24,17 +24,20 @@ public class BPLTypeChecker{
 
 	private void topDownPass(ParseTreeNode root){
 		ParseTreeNode declarationlist = root.getChild(0);
+		ParseTreeNode d;
+		ParseTreeNode child;
 		while(declarationlist.getChild(1) != null){
-			ParseTreeNode d = declarationlist.getChild(0);
-			System.out.println(d.kind);
-			if(!checkVarDec(d.getChild(0))){
-				checkFunDec(d.getChild(0));
+			d = declarationlist.getChild(0);
+			child = d.getChild(0);
+			if(!checkVarDec(child)){
+				checkFunDec(child);
 			}
 			declarationlist = declarationlist.getChild(1);
 		}
-		ParseTreeNode d = declarationlist.getChild(0);
-		if(!checkVarDec(d.getChild(0))){
-			checkFunDec(d.getChild(0));
+		d = declarationlist.getChild(0);
+		child = d.getChild(0);
+		if(!checkVarDec(child)){
+			checkFunDec(child);
 		}
 	}
 
@@ -57,7 +60,7 @@ public class BPLTypeChecker{
 			}
 			for(ParseTreeNode child:root.getChildren()){
 				if(child != null){
-					checkLocalDec(child);
+					checkLocalDecOrReference(child);
 				}
 			}
 			return true;
@@ -67,34 +70,62 @@ public class BPLTypeChecker{
 
 	private boolean checkVarDec(ParseTreeNode root){
 		if(root.kind == "var dec"){
-			//putGlobalDec(root);
+			putGlobalDec(root);
 			return true;
 		}
 		return false;
 	}
 
+	private void checkReference(ParseTreeNode child){
+		ParseTreeNode dec = symbolTable.get(child.kind);
+		if(dec != null && child.getLineNumber() != dec.getLineNumber()){
+			child.setDeclaration(dec);
+			if(debug){
+				System.out.println("Connecting global declaration to "+child.kind+" referenced on line "+child.getLineNumber());
+			}
+		}
+		for(int i=0; i<localDecs.size(); i++){
+			dec = localDecs.get(i);
+			int j = 1;
+			ParseTreeNode decChild = dec.getChild(i);
+			while(decChild.kind == "*" || decChild.kind == "type specifier"){
+				i++;
+				decChild = dec.getChild(i);
+			}
+			if(decChild.kind.equals(child.kind) && child.getLineNumber() != dec.getLineNumber()){
+				child.setDeclaration(dec);
+				if(debug){
+					System.out.println("Connecting local declaration to "+child.kind+" referenced on line "+child.getLineNumber());
+				}
+			}
+		}
+	}
+
 	private void putGlobalDec(ParseTreeNode root){
 		int i = 1;
 		ParseTreeNode child = root.getChild(i);
-			while(child.kind == "*" || child.kind == "type specifier"){
-				i++;
-				child = root.getChild(i);
-			}
-			symbolTable.put(child.kind, root);
+		while(child.kind == "*" || child.kind == "type specifier"){
+			i++;
+			child = root.getChild(i);
+		}
+		symbolTable.put(child.kind, root);
 			if(debug){
 				System.out.println("Adding "+root.kind.toUpperCase()+" \""+child.kind+"\" to the global symbol table");
 			}
 	}
 
-	private void checkLocalDec(ParseTreeNode child){
+	private boolean checkLocalDecOrReference(ParseTreeNode child){
 		if(child.kind == "var dec"){
 			putLocalDec(child);
+			return true;
 		}
+		checkReference(child);
 		for(ParseTreeNode grandchild:child.getChildren()){
 			if(grandchild != null){
-				checkLocalDec(grandchild);
+				checkLocalDecOrReference(grandchild);
 			}
 		}
+		return false;
 	}
 
 	private void putLocalDec(ParseTreeNode root){

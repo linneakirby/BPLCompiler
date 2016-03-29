@@ -40,6 +40,10 @@ public class ParseTreeNode{
 		this.declaration = dec;
 	}
 
+	public int getLineNumber(){
+		return lineNumber;
+	}
+
 	public StringBuilder toStringHelper(StringBuilder nodeString, int depth){
 		nodeString.append("LINE " +lineNumber+": ");
 		for(int i=0; i<depth; i++){
