@@ -18,11 +18,13 @@ public class BPLTypeChecker{
 	public BPLTypeChecker(String filename) throws BPLException{
 		BPLParser parser = new BPLParser(filename);
 		symbolTable = new HashMap<String, ParseTreeNode>();
-		topDownPass(parser.getParseTree());
-		bottomUpPass();
+		ParseTreeNode root = parser.getParseTree();
+		findReferences(root);
+		typeCheck(root);
 	}
 
-	private void topDownPass(ParseTreeNode root) throws BPLException{
+	//top-down pass that finds all references to variables and functions
+	private void findReferences(ParseTreeNode root) throws BPLException{
 		ParseTreeNode declarationlist = root.getChild(0);
 		ParseTreeNode d;
 		ParseTreeNode child;
@@ -41,10 +43,73 @@ public class BPLTypeChecker{
 		}
 	}
 
-	private void bottomUpPass(){
+	//type-checks all references
+	private String typeCheck(ParseTreeNode node) throws BPLException{
+		for(ParseTreeNode child:node.getChildren()){
+			if(child != null){
+				typeCheck(child);
+			}
+		}
+		String type;
+		if(node.kind.equals("if statement")){
+			//make sure condition is 'int'
+			type = typeCheck(node.getChild(0));
+			if(!type.equals("int")){
+				throw new BPLException("ERROR: for if statement on line "+node.getLineNumber()+" expected type 'int' but was assigned type '"+type+"'");
+			}
+			return "int";
+		}
+		else if(node.kind.equals("while statement")){
+			//check for 'int'
+			type = typeCheck(node.getChild(0));
+			if(!type.equals("int")){
+				throw new BPLException("ERROR: for while statement on line "+node.getLineNumber()+" expected type 'int' but was assigned type '"+type+"'");
+			}
+			return "int";
+		}
+		else if(node.kind.equals("return statement")){
+			//could be 'int' or 'string'; make sure not 'void'
+			if(node.getChild(0) != null){
+				return typeCheck(node.getChild(0));
+			}
+		}
+		/*else if(node.kind.equals("write statement") || node.kind.equals("writeln statement")){
+			//check for 'string'
+		}*/
+		else if(node.kind.equals("expression")){
 
+			if(node.getChild(0).kind.equals("comp exp")){
+				return typeCheck(node.getChild(0));
+			}
+		}
+		else if(node.kind.equals("comp exp")){
+
+		}
+		else if(node.kind.equals("E")){
+
+		}
+		else if(node.kind.equals("T")){
+
+		}
+		else if(node.kind.equals("F")){
+
+		}
+		else if(node.kind.equals("factor")){
+
+		}
+		else if(node.kind.equals("read")){
+			return "string";
+		}
+		else if(node.kind.equals("fun call")){
+
+		}
+		return "none";
 	}
 
+	//checks to see if a node is a function declaration
+	//if so, adds it to the list of global variables
+	//and adds its children to the list of local variables
+	//then, recursively checks to see if any of its children are local decs or references
 	private boolean checkFunDec(ParseTreeNode root) throws BPLException{
 		if(root.kind == "fun dec"){
 			putGlobalDec(root);
@@ -68,6 +133,8 @@ public class BPLTypeChecker{
 		return false;
 	}
 
+	//checks to see if a node is a variable declaration
+	//if so, adds it to the list of global variables
 	private boolean checkVarDec(ParseTreeNode root){
 		if(root.kind == "var dec"){
 			putGlobalDec(root);
@@ -76,6 +143,7 @@ public class BPLTypeChecker{
 		return false;
 	}
 
+	//checks to make sure an ID has a declaration
 	private void checkReference(ParseTreeNode child) throws BPLException{
 		boolean referenceFound = false;
 		ParseTreeNode dec = symbolTable.get(child.kind);
@@ -83,7 +151,7 @@ public class BPLTypeChecker{
 			if(child.getLineNumber() != dec.getLineNumber()){
 				child.setDeclaration(dec);
 				if(debug){
-					System.out.println("Connecting global declaration to \""+child.kind+"\" referenced on line "+child.getLineNumber());
+					System.out.println("Connecting \""+child.kind+"\" on line "+child.getLineNumber()+" to global declaration on line "+dec.getLineNumber());
 				}
 			}
 			referenceFound = true;
@@ -101,7 +169,7 @@ public class BPLTypeChecker{
 				if(child.getLineNumber() != dec.getLineNumber()){
 					child.setDeclaration(dec);
 					if(debug){
-						System.out.println("Connecting local declaration to \""+child.kind+"\" referenced on line "+child.getLineNumber());
+						System.out.println("Connecting \""+child.kind+"\" on line "+child.getLineNumber()+" to local declaration on line "+dec.getLineNumber());
 					}
 				}
 				referenceFound = true;
@@ -112,6 +180,7 @@ public class BPLTypeChecker{
 		}
 	}
 
+	//adds a global declaration to the symbol table
 	private void putGlobalDec(ParseTreeNode root){
 		int i = 1;
 		ParseTreeNode child = root.getChild(i);
@@ -125,6 +194,8 @@ public class BPLTypeChecker{
 			}
 	}
 
+	//checks recursively to see if a node or any of its children is a local declaration or a reference
+	//if its a local dec, adds it to the list of local decs
 	private boolean checkLocalDecOrReference(ParseTreeNode child) throws BPLException{
 		if(child.kind == "var dec"){
 			putLocalDec(child);
@@ -141,6 +212,7 @@ public class BPLTypeChecker{
 		return false;
 	}
 
+	//adds a node to the list of local declarations
 	private void putLocalDec(ParseTreeNode root){
 		int i = 1;
 		ParseTreeNode child = root.getChild(i);
