@@ -83,32 +83,32 @@ public class BPLTypeChecker{
 			if(child.getLineNumber() != dec.getLineNumber()){
 				child.setDeclaration(dec);
 				if(debug){
-					System.out.println("Connecting global declaration to "+child.kind+" referenced on line "+child.getLineNumber());
+					System.out.println("Connecting global declaration to \""+child.kind+"\" referenced on line "+child.getLineNumber());
 				}
 			}
 			referenceFound = true;
 		}
 		for(int i=0; i<localDecs.size(); i++){
 			dec = localDecs.get(i);
-			int j = 1;
-			ParseTreeNode decChild = dec.getChild(i);
+			int index = 1;
+			ParseTreeNode decChild = dec.getChild(index);
 			while(decChild.kind == "*" || decChild.kind == "type specifier"){
-				i++;
-				decChild = dec.getChild(i);
+				index++;
+				decChild = dec.getChild(index);
 			}
 			decChild = decChild.getChild(0);
 			if(decChild.kind.equals(child.kind)){
 				if(child.getLineNumber() != dec.getLineNumber()){
 					child.setDeclaration(dec);
 					if(debug){
-						System.out.println("Connecting local declaration to "+child.getChild(0).kind+" referenced on line "+child.getLineNumber());
+						System.out.println("Connecting local declaration to \""+child.kind+"\" referenced on line "+child.getLineNumber());
 					}
 				}
 				referenceFound = true;
 			}
 		}
-		if(!referenceFound && child.kind.equals("id")){
-			throw new BPLException(child.getChild(0).kind+" on line "+child.getLineNumber()+" is undeclared!");
+		if(!referenceFound){
+			throw new BPLException("ERROR: \""+child.kind+"\" on line "+child.getLineNumber()+" is undeclared!");
 		}
 	}
 
@@ -130,7 +130,9 @@ public class BPLTypeChecker{
 			putLocalDec(child);
 			return true;
 		}
-		checkReference(child);
+		if(child.kind == "id"){
+			checkReference(child.getChild(0));
+		}
 		for(ParseTreeNode grandchild:child.getChildren()){
 			if(grandchild != null){
 				checkLocalDecOrReference(grandchild);
