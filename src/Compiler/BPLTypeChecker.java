@@ -55,7 +55,10 @@ public class BPLTypeChecker{
 			//make sure condition is 'int'
 			type = typeCheck(node.getChild(0));
 			if(!type.equals("int")){
-				throw new BPLException("ERROR: for if statement on line "+node.getLineNumber()+" expected type 'int' but was assigned type '"+type+"'");
+				throw new BPLException("ERROR: for IF STATEMENT on line "+node.getLineNumber()+" expected type 'int' but was assigned type \""+type+"\"");
+			}
+			if(debug){
+				System.out.println("IF STATEMENT on line "+node.getLineNumber()+" assigned type \"int\"");
 			}
 			return "int";
 		}
@@ -63,14 +66,21 @@ public class BPLTypeChecker{
 			//check for 'int'
 			type = typeCheck(node.getChild(0));
 			if(!type.equals("int")){
-				throw new BPLException("ERROR: for while statement on line "+node.getLineNumber()+" expected type 'int' but was assigned type '"+type+"'");
+				throw new BPLException("ERROR: for WHILE STATEMENT on line "+node.getLineNumber()+" expected type 'int' but was assigned type \""+type+"\"");
+			}
+			if(debug){
+				System.out.println("WHILE STATEMENT on line "+node.getLineNumber()+" assigned type \"int\"");
 			}
 			return "int";
 		}
 		else if(node.kind.equals("return statement")){
 			//could be 'int' or 'string'; make sure not 'void'
 			if(node.getChild(0) != null){
-				return typeCheck(node.getChild(0));
+				type = typeCheck(node.getChild(0));
+				if(debug){
+					System.out.println("RETURN STATEMENT on line "+node.getChild(0).getLineNumber()+" assigned type \""+type+"\"");
+				}
+				return type;
 			}
 		}
 		/*else if(node.kind.equals("write statement") || node.kind.equals("writeln statement")){
@@ -79,29 +89,115 @@ public class BPLTypeChecker{
 		else if(node.kind.equals("expression")){
 
 			if(node.getChild(0).kind.equals("comp exp")){
-				return typeCheck(node.getChild(0));
+				type = typeCheck(node.getChild(0));
+				if(debug){
+					System.out.println("EXPRESSION on line "+node.getChild(0).getLineNumber()+" assigned type \""+type+"\"");
+				}
+				return type;
+			}
+			else{
+				//TODO: check var == expression
 			}
 		}
 		else if(node.kind.equals("comp exp")){
-
+			String eType = typeCheck(node.getChild(0));
+			if(!eType.equals("int")){
+					throw new BPLException("ERROR: for E on line "+node.getChild(0).getLineNumber()+" expected type \"int\" but was assigned type \""+eType+"\"");
+			}
+			if(node.getChild(2) != null){
+				String e2Type = typeCheck(node.getChild(2));	
+				if(!e2Type.equals("int")){
+					throw new BPLException("ERROR: for E on line "+node.getChild(2).getLineNumber()+" expected type \"int\" but was assigned type \""+e2Type+"\"");
+				}
+				if(!eType.equals(e2Type)){
+					throw new BPLException("ERROR: for COMP EXP on line "+node.getChild(0).getLineNumber()+" expected type \"int\" but was assigned type \""+eType+"\" and \""+e2Type+"\"");
+				}
+			}
+			if(debug){
+				System.out.println("COMP EXP on line "+node.getChild(0).getLineNumber()+" assigned type \"int\"");
+			}
+			return eType;
 		}
 		else if(node.kind.equals("E")){
-
+			String tType = typeCheck(node.getChild(2));
+			if(!tType.equals("int")){
+					throw new BPLException("ERROR: for T on line "+node.getChild(2).getLineNumber()+" expected type \"int\" but was assigned type \""+tType+"\"");
+			}
+			if(node.getChild(0) != null){
+				String eType = typeCheck(node.getChild(0));	
+				if(!eType.equals("int")){
+					throw new BPLException("ERROR: for E on line "+node.getChild(0).getLineNumber()+" expected type \"int\" but was assigned type \""+eType+"\"");
+				}
+				if(!tType.equals(eType)){
+					throw new BPLException("ERROR: for E on line "+node.getChild(2).getLineNumber()+" expected type \"int\" but was assigned type \""+eType+"\" and \""+tType+"\"");
+				}
+			}
+			if(debug){
+				System.out.println("E on line "+node.getChild(2).getLineNumber()+" assigned type \"int\"");
+			}
+			return tType;
 		}
 		else if(node.kind.equals("T")){
-
+			String fType = typeCheck(node.getChild(2));
+			if(!fType.equals("int")){
+					throw new BPLException("ERROR: for F on line "+node.getChild(2).getLineNumber()+" expected type \"int\" but was assigned type \""+fType+"\"");
+			}
+			if(node.getChild(0) != null){
+				String tType = typeCheck(node.getChild(0));	
+				if(!tType.equals("int")){
+					throw new BPLException("ERROR: for T on line "+node.getChild(0).getLineNumber()+" expected type \"int\" but was assigned type \""+tType+"\"");
+				}
+				if(!fType.equals(tType)){
+					throw new BPLException("ERROR: for T on line "+node.getChild(2).getLineNumber()+" expected type \"int\" but was assigned type \""+tType+"\" and \""+fType+"\"");
+				}
+			}
+			if(debug){
+				System.out.println("T on line "+node.getChild(2).getLineNumber()+" assigned type \"int\"");
+			}
+			return fType;
 		}
 		else if(node.kind.equals("F")){
-
+			String ftype = typeCheck(node.getChild(0));
+			if(node.getChild(1) != null){
+				ftype = typeCheck(node.getChild(1));
+				if(!ftype.equals("int") && !ftype.equals("string")){
+					throw new BPLException("ERROR: for F on line "+node.getChild(1).getLineNumber()+" expected type \"int\" or \"string\" but was assigned type \""+ftype+"\"");
+				}
+				if(debug){
+					System.out.println("F on line "+node.getChild(1).getLineNumber()+" assigned type \""+ftype+"\"");
+				}
+				return ftype;
+			}
+			if(debug){
+				System.out.println("F on line "+node.getChild(0).getLineNumber()+" assigned type \""+ftype+"\"");
+			}
+			return ftype;
 		}
 		else if(node.kind.equals("factor")){
 
 		}
 		else if(node.kind.equals("read")){
-			return "string";
+			if(debug){
+				System.out.println("READ on line "+node.getLineNumber()+" assigned type \"int\"");
+			}
+			return "int";
 		}
 		else if(node.kind.equals("fun call")){
-
+			ParseTreeNode args = node.getChild(1);
+			ParseTreeNode argList = args.getChild(0);
+			ParseTreeNode exp;
+			if(!argList.kind.equals("empty")){
+				exp = argList.getChild(1);
+				while(exp != null){
+					type = typeCheck(exp);
+					//TODO: type check each expression
+					argList = argList.getChild(0);
+					exp = argList.getChild(1);
+				}
+				exp = argList.getChild(0);
+				type = typeCheck(exp);
+				//TODO: type check last expression
+			}
 		}
 		return "none";
 	}
