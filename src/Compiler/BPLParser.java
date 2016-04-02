@@ -856,7 +856,9 @@ public class BPLParser{
 		if(!checkCurrentToken(Token.T_NUM)){
 			throw new BPLException(currentToken.lineNumber, "Missing '<num>'");
 		}
-		return new ParseTreeNode(currentToken, 0, currentToken.tokenString);
+		ParseTreeNode n = new ParseTreeNode(currentToken, 1, "num");
+		n.setChild(0, new ParseTreeNode(currentToken, 0, currentToken.tokenString));
+		return n;
 	}
 
 	private ParseTreeNode stringLiteral() throws BPLException{
@@ -866,7 +868,9 @@ public class BPLParser{
 		if(!checkCurrentToken(Token.T_STRINGLITERAL)){
 			throw new BPLException(currentToken.lineNumber, "Missing '<string>'");
 		}
-		return new ParseTreeNode(currentToken, 0, currentToken.tokenString);
+		ParseTreeNode s = new ParseTreeNode(currentToken, 1, "string literal");
+		s.setChild(0, new ParseTreeNode(currentToken, 0, currentToken.tokenString));
+		return s;
 	}
 
 	private ParseTreeNode star() throws BPLException{
