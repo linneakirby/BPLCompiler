@@ -81,11 +81,11 @@ public class BPLTypeChecker{
 		else if(node.kind.equals("fun call")){
 			return typeCheckFunCall(node);
 		}
-		/*for(ParseTreeNode child:node.getChildren()){
+		for(ParseTreeNode child:node.getChildren()){
 			if(child != null){
-				return typeCheck(child);
+				typeCheck(child);
 			}
-		}*/
+		}
 		return "none";
 	}
 
@@ -99,6 +99,9 @@ public class BPLTypeChecker{
 			System.out.println("IF STATEMENT on line "+node.getLineNumber()+" assigned type \"int\"");
 		}
 		typeCheck(node.getChild(1));
+		if(node.getChild(2) != null){
+			typeCheck(node.getChild(2));
+		}
 		return "none";
 	}
 
@@ -285,17 +288,32 @@ public class BPLTypeChecker{
 		ParseTreeNode argList = args.getChild(0);
 		ParseTreeNode exp;
 		String type;
+		ParseTreeNode dec = node.getChild(0).getChild(0).getDeclaration();
+		ParseTreeNode params = dec.getChild(2);
+		ParseTreeNode paramList = params.getChild(0);
+		ParseTreeNode param;
+		String pType;
 		if(!argList.kind.equals("empty")){
-			exp = argList.getChild(1);
-			while(exp != null){
-				type = typeCheck(exp);
-				//TODO: type check each expression
-				argList = argList.getChild(0);
-				exp = argList.getChild(1);
-			}
 			exp = argList.getChild(0);
 			type = typeCheck(exp);
-			//TODO: type check last expression
+			param = paramList.getChild(0);
+			pType = param.getChild(0).getChild(0).kind;
+			if(!type.equals(pType)){
+				throw new BPLException("ERROR: EXPRESSION on line "+node.getLineNumber()+" expected type \""+pType+"\" but was assigned type \""+type+"\"");
+			}
+			argList = argList.getChild(1);
+			paramList = paramList.getChild(1);
+			while(argList != null){
+				exp = argList.getChild(0);
+				param = paramList.getChild(0);
+				type = typeCheck(exp);
+				pType = param.getChild(0).getChild(0).kind;
+				if(!type.equals(pType)){
+					throw new BPLException("ERROR: EXPRESSION on line "+node.getLineNumber()+" expected type \""+pType+"\" but was assigned type \""+type+"\"");
+				}
+				argList = argList.getChild(1);
+				paramList = paramList.getChild(1);
+			}
 		}
 		return "none"; //TODO: FIX THIS
 	}
