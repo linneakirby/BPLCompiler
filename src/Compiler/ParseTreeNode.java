@@ -8,10 +8,12 @@ import java.lang.String;
 
 public class ParseTreeNode{
 	private int lineNumber;
-	public String kind;
+	public String kind; //for grammar
 	private ParseTreeNode[] children;
 	private int numchildren;
 	private ParseTreeNode declaration;
+	private String reference; //actual code
+	private String type; //for type checking
 
 	public ParseTreeNode(Token tok, int numchildren, String kind){
 		this.lineNumber = tok.lineNumber;
@@ -30,6 +32,22 @@ public class ParseTreeNode{
 
 	public void setChild(int i, ParseTreeNode child){
 		children[i] = child;
+	}
+
+	public void setType(String t){
+		type = t;
+	}
+
+	public String getType(){
+		return type;
+	}
+
+	public void setReference(String s){
+		reference = s;
+	}
+
+	public String getReference(){
+		return reference;
 	}
 
 	public ParseTreeNode getDeclaration(){

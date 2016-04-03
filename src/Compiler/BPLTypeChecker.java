@@ -141,8 +141,41 @@ public class BPLTypeChecker{
 			}
 			else{
 				//TODO: check var == expression
+				//get var type
+				String varType = typeCheckVar(node.getChild(0));
+				String expType = typeCheck(node.getChild(1));
+				if(!varType.equals(expType)){
+						throw new BPLException("ERROR: for EXPRESSION on line "+node.getLineNumber()+" expected type \""+varType+"\" arr but was assigned type \""+expType+"\"");
+				}				
+
 			}
 			return "none"; //TODO: FIX THIS
+	}
+
+	private String typeCheckVar(ParseTreeNode node) throws BPLException{
+		ParseTreeNode varId = node.getChild(0);
+		ParseTreeNode varDec;
+		String varType = "test";
+		if(varId.kind.equals("id")){ //<id> or <id>[EXPRESSION]
+			varDec = varId.getChild(0).getDeclaration();
+			varType = varDec.getChild(0).getChild(0).kind;
+				if(varDec.getChild(1) != null && varDec.getChild(1).kind.equals("*")){
+					varType = varType.concat(" ptr");
+				}
+				if(node.getChild(1) != null && node.getChild(1).kind.equals("[")){ //<id>[EXPRESSION]
+					if(varDec.getChild(2) == null || !varDec.getChild(2).kind.equals("[")){
+						throw new BPLException("ERROR: for VAR on line "+node.getLineNumber()+" expected type \""+varType+"\" arr but was assigned type \""+varType+"\"");
+					}
+					varType = varType.concat(" arr");
+				}
+		}
+		else if(node.getChild(1).kind.equals("id")){ // *<id>
+			varId = node.getChild(1);
+			varDec = varId.getChild(0).getDeclaration();
+			varType = varDec.getChild(0).getChild(0).kind;
+			varType = varType.concat(" ptr");
+		}
+		return varType;
 	}
 
 	private String typeCheckCompExp(ParseTreeNode node) throws BPLException{
@@ -208,16 +241,27 @@ public class BPLTypeChecker{
 	private String typeCheckF(ParseTreeNode node) throws BPLException{
 		ParseTreeNode f = node.getChild(1);
 		String type;
+		//&Factor or *Factor or -Factor
 		if (f != null){
 			type = typeCheck(f);
 			ParseTreeNode f0 = node.getChild(0);
 			if(f0.kind.equals("-") && !type.equals("int")){
 				throw new BPLException("ERROR: for F on line "+node.getChild(1).getLineNumber()+" expected type \"int\" but was assigned type \""+type+"\"");
 			}
+			/*else if(f0.kind.equals("*")){
+				if(!type.contains("ptr")){
+					throw new BPLException("ERROR: for F on line "+node.getChild(1).getLineNumber()+" expected type \"int ptr\" or \"string ptr\" but was assigned type \""+type+"\"");
+				}
+				type.replace(" ptr", "");
+			}*/
+			else if(f0.kind.equals("&")){
+				type+=" ptr";
+			}
 			else if (!type.equals("int") && !type.equals("string")){
 				throw new BPLException("ERROR: for F on line "+node.getChild(1).getLineNumber()+" expected type \"int\" or \"string\" but was assigned type \""+type+"\"");
 			}
 		}
+		//Factor
 		else{
 			type = typeCheck(node.getChild(0));
 			if(!type.contains("int") && !type.contains("string")){
@@ -287,12 +331,13 @@ public class BPLTypeChecker{
 		ParseTreeNode args = node.getChild(1);
 		ParseTreeNode argList = args.getChild(0);
 		ParseTreeNode exp;
-		String type;
 		ParseTreeNode dec = node.getChild(0).getChild(0).getDeclaration();
+		String decType = dec.getChild(0).getChild(0).kind;
 		ParseTreeNode params = dec.getChild(2);
 		ParseTreeNode paramList = params.getChild(0);
 		ParseTreeNode param;
 		String pType;
+		String type;
 		if(!argList.kind.equals("empty")){
 			exp = argList.getChild(0);
 			type = typeCheck(exp);
@@ -315,7 +360,23 @@ public class BPLTypeChecker{
 				paramList = paramList.getChild(1);
 			}
 		}
-		return "none"; //TODO: FIX THIS
+		checkReturnType(node, decType);
+		return decType;
+	}
+
+	private void checkReturnType(ParseTreeNode node, String expType) throws BPLException{
+		String type;
+		for(ParseTreeNode child:node.getChildren()){
+			if(child != null){
+				if(child.kind.equals("return statement")){
+					type = typeCheck(child);
+					if(!type.equals(expType)){
+						throw new BPLException("ERROR: FUN CALL on line "+node.getLineNumber()+" expected type \""+expType+"\" but was assigned type \""+type+"\"");
+					}
+				}
+				checkReturnType(child, expType);
+			}
+		}
 	}
 
 	//checks to see if a node is a function declaration
@@ -327,10 +388,17 @@ public class BPLTypeChecker{
 			putGlobalDec(root);
 			localDecs = new LinkedList<ParseTreeNode>();
 			ParseTreeNode paramlist = root.getChild(2).getChild(0);
+			ParseTreeNode p = null;
 			while(paramlist != null && paramlist.kind == "param list"){
-				ParseTreeNode p = paramlist.getChild(0);
+				p = paramlist.getChild(0);
+				paramlist = paramlist.getChild(1);
 				localDecs.add(p);
-				paramlist = p.getChild(1);
+				if(debug){
+					System.out.println("Adding "+p.kind.toUpperCase()+" \""+p.getChild(1).getChild(0).kind+"\" to the local declarations");
+				}
+			}
+			if(p != null){
+				localDecs.add(p);
 				if(debug){
 					System.out.println("Adding "+p.kind.toUpperCase()+" \""+p.getChild(1).getChild(0).kind+"\" to the local declarations");
 				}
@@ -372,7 +440,7 @@ public class BPLTypeChecker{
 			dec = localDecs.get(i);
 			int index = 1;
 			ParseTreeNode decChild = dec.getChild(index);
-			while(decChild.kind == "*" || decChild.kind == "type specifier"){
+			while(decChild.kind.equals("*") || decChild.kind.equals("type specifier")){
 				index++;
 				decChild = dec.getChild(index);
 			}
@@ -427,14 +495,19 @@ public class BPLTypeChecker{
 	//adds a node to the list of local declarations
 	private void putLocalDec(ParseTreeNode root){
 		int i = 1;
+		String type = "";
 		ParseTreeNode child = root.getChild(i);
-			while(child.kind == "*" || child.kind == "type specifier"){
+			while(child.kind.equals("*") || child.kind.equals("type specifier")){
 				i++;
+				if(child.kind.equals("*")){
+					type = "*";
+				}
 				child = root.getChild(i);
 			}
 			localDecs.add(root);
+			type+=child.getChild(0).kind;
 			if(debug){
-				System.out.println("Adding "+root.kind.toUpperCase()+" \""+child.getChild(0).kind+"\" to the local declarations");
+				System.out.println("Adding "+root.kind.toUpperCase()+" \""+type+"\" to the local declarations");
 			}
 	}
 

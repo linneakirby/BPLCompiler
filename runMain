@@ -2,4 +2,4 @@
 cd bin
 #java Compiler.BPLScanner ../testFiles/example1.txt
 #java Compiler.BPLParser ../testFiles/P11.bpl
-java Compiler.BPLTypeChecker ../testFiles/P11.bpl
+java Compiler.BPLTypeChecker ../testFiles/P6.bpl
