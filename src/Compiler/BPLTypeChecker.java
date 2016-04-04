@@ -166,7 +166,7 @@ public class BPLTypeChecker{
 					if(varDec.getChild(2) == null || !varDec.getChild(2).kind.equals("[")){
 						throw new BPLException("ERROR: for VAR on line "+node.getLineNumber()+" expected type \""+varType+"\" arr but was assigned type \""+varType+"\"");
 					}
-					varType = varType.concat(" arr");
+					//varType = varType.concat(" arr");
 				}
 		}
 		else if(node.getChild(1).kind.equals("id")){ // *<id>
