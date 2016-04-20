@@ -10,17 +10,18 @@ import java.lang.String;
 
 public class BPLTypeChecker{
 
-	private boolean debug = true;
+	private boolean debug = false;
 
 	private HashMap<String, ParseTreeNode> symbolTable;
 	private LinkedList<ParseTreeNode> localDecs;
+	public ParseTreeNode parseTree;
 
 	public BPLTypeChecker(String filename) throws BPLException{
 		BPLParser parser = new BPLParser(filename);
 		symbolTable = new HashMap<String, ParseTreeNode>();
-		ParseTreeNode root = parser.getParseTree();
-		findReferences(root);
-		typeCheck(root);
+		ParseTreeNode parseTree = parser.getParseTree();
+		findReferences(parseTree);
+		typeCheck(parseTree);
 	}
 
 	//top-down pass that finds all references to variables and functions

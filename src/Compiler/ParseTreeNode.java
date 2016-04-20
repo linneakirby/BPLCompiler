@@ -12,7 +12,7 @@ public class ParseTreeNode{
 	private ParseTreeNode[] children;
 	private int numchildren;
 	private ParseTreeNode declaration;
-	private String reference; //actual code
+	private String expression; //actual code
 	private String type; //for type checking
 
 	public ParseTreeNode(Token tok, int numchildren, String kind){
@@ -42,12 +42,12 @@ public class ParseTreeNode{
 		return type;
 	}
 
-	public void setReference(String s){
-		reference = s;
+	public void setExpression(String s){
+		expression = s;
 	}
 
-	public String getReference(){
-		return reference;
+	public String getExpression(){
+		return expression;
 	}
 
 	public ParseTreeNode getDeclaration(){
