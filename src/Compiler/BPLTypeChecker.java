@@ -19,7 +19,7 @@ public class BPLTypeChecker{
 	public BPLTypeChecker(String filename) throws BPLException{
 		BPLParser parser = new BPLParser(filename);
 		symbolTable = new HashMap<String, ParseTreeNode>();
-		ParseTreeNode parseTree = parser.getParseTree();
+		parseTree = parser.getParseTree();
 		findReferences(parseTree);
 		typeCheck(parseTree);
 	}
@@ -42,6 +42,23 @@ public class BPLTypeChecker{
 		if(!checkVarDec(child)){
 			checkFunDec(child);
 		}
+	}
+
+
+	private String setType(ParseTreeNode node, String type){
+		for(ParseTreeNode child:node.getChildren()){
+			if(child != null){
+				if(child.kind == "id"){
+					setType(child.getChild(0), type);
+					child.setExpression(child.getChild(0).kind);
+					return child.getChild(0).kind;
+				}
+				child.setExpression(setType(child, type));
+				return child.getExpression();
+
+			}
+		}
+		return node.getExpression();
 	}
 
 	//type-checks all references
@@ -99,6 +116,7 @@ public class BPLTypeChecker{
 		if(debug){
 			System.out.println("IF STATEMENT on line "+node.getLineNumber()+" assigned type \"int\"");
 		}
+		node.getChild(0).setType(type);
 		typeCheck(node.getChild(1));
 		if(node.getChild(2) != null){
 			typeCheck(node.getChild(2));
@@ -115,6 +133,7 @@ public class BPLTypeChecker{
 		if(debug){
 			System.out.println("WHILE STATEMENT on line "+node.getLineNumber()+" assigned type \"int\"");
 		}
+		node.getChild(0).setType(type);
 		typeCheck(node.getChild(1));
 		return "none";
 	}
@@ -126,6 +145,7 @@ public class BPLTypeChecker{
 			if(debug){
 				System.out.println("RETURN STATEMENT on line "+node.getChild(0).getLineNumber()+" assigned type \""+type+"\"");
 			}
+			node.getChild(0).setType(type);
 			return type;
 		}
 		return "none";
@@ -135,20 +155,27 @@ public class BPLTypeChecker{
 
 			if(node.getChild(0).kind.equals("comp exp")){
 				String type = typeCheck(node.getChild(0));
+				node.getChild(0).setType(type);
+				node.setType(type);
 				if(debug){
 					System.out.println("EXPRESSION on line "+node.getChild(0).getLineNumber()+" assigned type \""+type+"\"");
+					System.out.println(node.getType());
 				}
 				return type;
 			}
 			else{
-				//TODO: check var == expression
 				//get var type
 				String varType = typeCheckVar(node.getChild(0));
 				String expType = typeCheck(node.getChild(1));
 				if(!varType.equals(expType)){
 						throw new BPLException("ERROR: for EXPRESSION on line "+node.getLineNumber()+" expected type \""+varType+"\" arr but was assigned type \""+expType+"\"");
 				}				
-
+				node.getChild(0).setType(varType);
+				node.getChild(1).setType(expType);
+				node.setType(varType);
+				if(debug){
+					System.out.println(node.getType());
+				}
 			}
 			return "none"; //TODO: FIX THIS
 	}
@@ -176,22 +203,26 @@ public class BPLTypeChecker{
 			varType = varDec.getChild(0).getChild(0).kind;
 			varType = varType.concat(" ptr");
 		}
+		node.setType(varType);
 		return varType;
 	}
 
 	private String typeCheckCompExp(ParseTreeNode node) throws BPLException{
 		String eType = typeCheck(node.getChild(0));
+		node.getChild(0).setType(eType);
 		if(!eType.contains("int") && !eType.contains("string")){
 				throw new BPLException("ERROR: for E on line "+node.getChild(0).getLineNumber()+" expected type \"int\" or \"string\" or \"arr\" or \"ptr\" but was assigned type \""+eType+"\"");
 		}
 		if(node.getChild(2) != null){
-			String e2Type = typeCheck(node.getChild(2));	
+			String e2Type = typeCheck(node.getChild(2));
+			node.getChild(2).setType(e2Type);	
 			if(!e2Type.equals("int")){
 				throw new BPLException("ERROR: for E on line "+node.getChild(2).getLineNumber()+" expected type \"int\" but was assigned type \""+e2Type+"\"");
 			}
 			if(!eType.equals(e2Type)){
 				throw new BPLException("ERROR: for COMP EXP on line "+node.getChild(0).getLineNumber()+" expected type \"int\" but was assigned type \""+eType+"\" and \""+e2Type+"\"");
 			}
+			node.setType(eType);
 		}
 		if(debug){
 			System.out.println("COMP EXP on line "+node.getChild(0).getLineNumber()+" assigned type \"int\"");
@@ -201,17 +232,20 @@ public class BPLTypeChecker{
 
 	private String typeCheckE(ParseTreeNode node) throws BPLException{
 		String tType = typeCheck(node.getChild(2));
+		node.getChild(2).setType(tType);
 		if(!tType.contains("int") && !tType.contains("string")){
 			throw new BPLException("ERROR: for T on line "+node.getChild(2).getLineNumber()+" expected type \"int\" or \"string\" or \"arr\" or \"ptr\" but was assigned type \""+tType+"\"");
 		}
 		if(node.getChild(0) != null){
 			String eType = typeCheck(node.getChild(0));	
+			node.getChild(0).setType(eType);
 			if(!eType.equals("int")){
 				throw new BPLException("ERROR: for E on line "+node.getChild(0).getLineNumber()+" expected type \"int\" but was assigned type \""+eType+"\"");
 			}
 			if(!tType.equals(eType)){
 				throw new BPLException("ERROR: for E on line "+node.getChild(2).getLineNumber()+" expected type \"int\" but was assigned type \""+eType+"\" and \""+tType+"\"");
 			}
+			node.setType(eType);
 		}
 		if(debug){
 			System.out.println("E on line "+node.getChild(2).getLineNumber()+" assigned type \"int\"");
@@ -221,17 +255,20 @@ public class BPLTypeChecker{
 
 	private String typeCheckT(ParseTreeNode node) throws BPLException{
 		String fType = typeCheck(node.getChild(2));
+		node.getChild(2).setType(fType);
 		if(!fType.contains("int") && !fType.contains("string")){
 				throw new BPLException("ERROR: for F on line "+node.getChild(2).getLineNumber()+" expected type \"int\" or \"string\" or \"arr\" or \"ptr\" but was assigned type \""+fType+"\"");
 		}
 		if(node.getChild(0) != null){
 			String tType = typeCheck(node.getChild(0));	
+			node.getChild(0).setType(tType);
 			if(!tType.equals("int")){
 				throw new BPLException("ERROR: for T on line "+node.getChild(0).getLineNumber()+" expected type \"int\" but was assigned type \""+tType+"\"");
 			}
 			if(!fType.equals(tType)){
 				throw new BPLException("ERROR: for T on line "+node.getChild(2).getLineNumber()+" expected type \"int\" but was assigned type \""+tType+"\" and \""+fType+"\"");
 			}
+			node.setType(tType);
 		}
 		if(debug){
 			System.out.println("T on line "+node.getChild(2).getLineNumber()+" assigned type \"int\"");
@@ -261,13 +298,18 @@ public class BPLTypeChecker{
 			else if (!type.equals("int") && !type.equals("string")){
 				throw new BPLException("ERROR: for F on line "+node.getChild(1).getLineNumber()+" expected type \"int\" or \"string\" but was assigned type \""+type+"\"");
 			}
+			f.setType(type);
+			f0.setType(type);
+			node.setType(type);
 		}
 		//Factor
 		else{
 			type = typeCheck(node.getChild(0));
+			node.getChild(0).setType(type);
 			if(!type.contains("int") && !type.contains("string")){
 				throw new BPLException("ERROR: for F on line "+node.getChild(0).getLineNumber()+" expected type \"int\" or \"string\" or \"arr\" or \"ptr\" but was assigned type \""+type+"\"");
 			}
+			node.setType(type);
 		}
 		if(debug){
 			System.out.println("F on line "+node.getLineNumber()+" assigned type \""+type+"\"");
@@ -318,6 +360,7 @@ public class BPLTypeChecker{
 		if(debug){
 			System.out.println("FACTOR on line "+node.getLineNumber()+" assigned type \""+type+"\"");
 		}
+		node.setType(type);
 		return type;
 	}
 
@@ -325,6 +368,7 @@ public class BPLTypeChecker{
 		if(debug){
 				System.out.println("READ on line "+node.getLineNumber()+" assigned type \"int\"");
 			}
+			node.setType("int");
 			return "int";
 	}
 
@@ -362,6 +406,7 @@ public class BPLTypeChecker{
 			}
 		}
 		checkReturnType(node, decType);
+		node.setType(decType);
 		return decType;
 	}
 
