@@ -30,6 +30,7 @@ public class BPLCodeGenerator{
 		System.out.println(".WriteStringString: .string \"%s\"");
 
 		findStrings(root, 0);
+		findGlobalVariables(root);
 
 		System.out.println(".text");
 		System.out.println(".globl main");
@@ -51,6 +52,38 @@ public class BPLCodeGenerator{
 			}
 		}
 		return count;
+	}
+
+	private void checkDeclaration(ParseTreeNode dec){
+		String id;
+		int size = 8;
+
+		ParseTreeNode child = dec.getChild(0);
+		if(child.kind.equals("var dec")){
+			ParseTreeNode grandchild = child.getChild(1);
+			if(!grandchild.kind.equals("id")){
+				grandchild = child.getChild(2);
+			}
+			id = grandchild.getChild(0).kind;
+			if(child.getChild(2) != null && child.getChild(2).kind.equals("[")){
+				String num = child.getChild(3).getChild(0).kind;
+				size = size * Integer.parseInt(num);
+			}
+			System.out.println(".comm "+id+", "+size+", 32");
+		}
+	}
+
+	private void findGlobalVariables(ParseTreeNode node){
+		for(ParseTreeNode child: node.getChildren()){
+			if(child != null){
+				if(child.kind.equals("declaration")){
+					checkDeclaration();
+				}
+				else if(child.kind.equals ("declaration list"))){
+					findGlobalVariables(child);
+				}
+			}
+		}
 	}
 
 	//generates code
