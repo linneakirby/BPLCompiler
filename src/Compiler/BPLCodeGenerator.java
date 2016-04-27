@@ -10,6 +10,7 @@ import java.util.HashMap;
 public class BPLCodeGenerator{
 
 	private HashMap<String, String> strings;
+	private ArrayList<String> globalVariables;
 
 	public BPLCodeGenerator(String filename) throws BPLException{
 		BPLTypeChecker typeChecker = new BPLTypeChecker(filename);
@@ -54,6 +55,7 @@ public class BPLCodeGenerator{
 		return count;
 	}
 
+	//check to see if the declaration is a global variable and, if it is, print it to .rodata
 	private void checkDeclaration(ParseTreeNode dec){
 		String id;
 		int size = 8;
@@ -69,17 +71,19 @@ public class BPLCodeGenerator{
 				String num = child.getChild(3).getChild(0).kind;
 				size = size * Integer.parseInt(num);
 			}
+			globalVariables.add(id);
 			System.out.println(".comm "+id+", "+size+", 32");
 		}
 	}
 
+	//recursive method that finds all the global variables
 	private void findGlobalVariables(ParseTreeNode node){
 		for(ParseTreeNode child: node.getChildren()){
 			if(child != null){
 				if(child.kind.equals("declaration")){
-					checkDeclaration();
+					checkDeclaration(child);
 				}
-				else if(child.kind.equals ("declaration list"))){
+				else if(child.kind.equals ("declaration list")){
 					findGlobalVariables(child);
 				}
 			}
