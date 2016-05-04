@@ -129,7 +129,7 @@ public class BPLCodeGenerator{
 		if(node.kind.equals("fun dec")){
 			generateFunDec(node);
 		}
-		else if(node.kind.equals("if statement")){
+		/*else if(node.kind.equals("if statement")){
 			generateIfStatement(node);
 		}
 		else if(node.kind.equals("while statement")){
@@ -164,7 +164,7 @@ public class BPLCodeGenerator{
 		}
 		else if(node.kind.equals("fun call")){
 			generateFunCall(node);
-		}
+		}*/
 		for(ParseTreeNode child:node.getChildren()){
 			if(child != null){
 				generateCode(child);
@@ -246,8 +246,8 @@ public class BPLCodeGenerator{
 	//code generate a write statement
 	private void generateWriteStatement(ParseTreeNode node){
 		if(node.kind.equals("writeln statement")){
-			System.out.println("movq $.WritelnString, %rdi //prepare to write a new line");
-			System.out.println("movl $0, %eax //reset ret");
+			System.out.println("movq $.WritelnString, %rdi #prepare to write a new line");
+			System.out.println("movl $0, %eax #reset ret");
 			System.out.println("call printf");
 		}
 		else{
@@ -255,15 +255,16 @@ public class BPLCodeGenerator{
 			String type = exp.getType();
 			if(type.equals("int")){
 				evaluateExpression(exp);
-				System.out.println("movq $.WriteIntString, %rdi //prepare to write an int");
-				System.out.println("movl $0, %eax //reset ret");
+				System.out.println("movq %rax, %rsi #move num into 2nd arg to prepare for printing");
+				System.out.println("movq $.WriteIntString, %rdi #prepare to write an int");
+				System.out.println("movl $0, %eax #reset ret");
 				System.out.println("call printf");
 			}
 			else if(type.equals("string")){
 				String str = findString(node);
-				System.out.println("movq "+strings.get(str)+", %rsi //move "+strings.get(str)+" into 2nd arg to prepare for printing");
-				System.out.println("movq $.WriteStringString, %rdi //prepare to write a string");
-				System.out.println("movl $0, %eax //reset ret");
+				System.out.println("movq "+strings.get(str)+", %rsi #move "+strings.get(str)+" into 2nd arg to prepare for printing");
+				System.out.println("movq $.WriteStringString, %rdi #prepare to write a string");
+				System.out.println("movl $0, %eax #reset ret");
 				System.out.println("call printf");
 			}
 		}
