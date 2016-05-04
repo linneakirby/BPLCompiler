@@ -308,6 +308,7 @@ public class BPLCodeGenerator{
 		System.out.println(label+":");
 		System.out.println("mov $0, %rax #condition is false");
 		System.out.println(label2+":");
+		System.out.println("add $8, %rsp #pop the stack");
 	}
 
 	private void evaluateCompExp(ParseTreeNode node){
