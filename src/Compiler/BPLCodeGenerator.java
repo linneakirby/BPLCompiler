@@ -6,6 +6,7 @@ import java.lang.Exception;
 import java.lang.StringBuilder;
 import java.lang.String;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 public class BPLCodeGenerator{
 
@@ -32,6 +33,7 @@ public class BPLCodeGenerator{
 
 		findStrings(root, 0);
 		findGlobalVariables(root);
+		addDepths(root);
 
 		System.out.println(".text");
 		System.out.println(".globl main");
@@ -55,9 +57,40 @@ public class BPLCodeGenerator{
 		return count;
 	}
 
+	private void addDepthsHelper(ParseTreeNode node, int depth){
+		int d = depth;
+		if(node.kind.equals("param")){
+			node.setDepth(1);
+
+		}
+		else if(node.kind.equals("compound statement")){
+			depth++;
+		}
+		else if(node.kind.equals("var dec")){
+			node.setDepth(d);
+		}
+		else if(node.kind.equals("fun dec")){
+			node.setDepth(d);
+		}
+		for(ParseTreeNode child: node.getChildren()){
+			if(child != null){
+				addDepthsHelper(child, d);
+			}
+		}
+	}
+
+	private void addDepths(ParseTreeNode node){
+		for(ParseTreeNode child: node.getChildren()){
+			if(child != null){
+				addDepthsHelper(child, 2);
+			}
+		}
+	}
+
 	//check to see if the declaration is a global variable and, if it is, print it to .rodata
 	private void checkDeclaration(ParseTreeNode dec){
 		String id;
+		ParseTreeNode idNode;
 		int size = 8;
 
 		ParseTreeNode child = dec.getChild(0);
@@ -66,11 +99,13 @@ public class BPLCodeGenerator{
 			if(!grandchild.kind.equals("id")){
 				grandchild = child.getChild(2);
 			}
-			id = grandchild.getChild(0).kind;
+			idNode = grandchild.getChild(0);
+			id = idNode.kind;
 			if(child.getChild(2) != null && child.getChild(2).kind.equals("[")){
 				String num = child.getChild(3).getChild(0).kind;
 				size = size * Integer.parseInt(num);
 			}
+			idNode.setDepth(0);
 			globalVariables.add(id);
 			System.out.println(".comm "+id+", "+size+", 32");
 		}
