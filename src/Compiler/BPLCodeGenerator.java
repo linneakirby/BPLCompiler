@@ -12,6 +12,7 @@ public class BPLCodeGenerator{
 
 	private HashMap<String, String> strings;
 	private ArrayList<String> globalVariables;
+	private int labelCount = -1;
 
 	public BPLCodeGenerator(String filename) throws BPLException{
 		BPLTypeChecker typeChecker = new BPLTypeChecker(filename);
@@ -271,9 +272,55 @@ public class BPLCodeGenerator{
 		
 	}
 
-	private void evaluateCompExp(ParseTreeNode node){
+	private String makeLabel(){
+		labelCount++;
+		return "L"+labelCount;
+	}
+
+	private void evaluateE(ParseTreeNode e){
 		System.out.println("movq $5, %rax");
-		//ParseTreeNode child0 = node.getChild(0);
+	}
+
+	private void relopCompare(String relop){
+		String label = makeLabel();
+		String label2 = makeLabel();
+		System.out.println("cmp %eax, 0(%rsp) #relop compare");
+		if(relop.equals("<=")){
+			System.out.println("jge "+label);
+		}
+		else if(relop.equals("<")){
+			System.out.println("jg "+label);
+		}
+		else if(relop.equals("==")){
+			System.out.println("jne "+label);
+		}
+		else if(relop.equals("!=")){
+			System.out.println("je "+label);
+		}
+		else if(relop.equals(">")){
+			System.out.println("jl "+label);
+		}
+		else if(relop.equals(">=")){
+			System.out.println("jle "+label);
+		}
+		System.out.println("mov $1, %rax #condition is true");
+		System.out.println("jmp "+label2);
+		System.out.println(label+":");
+		System.out.println("mov $0, %rax #condition is false");
+		System.out.println(label2+":");
+	}
+
+	private void evaluateCompExp(ParseTreeNode node){
+		ParseTreeNode e = node.getChild(0);
+		evaluateE(e);
+		ParseTreeNode relop = node.getChild(1);
+		if(relop != null){
+			System.out.println("push %rax");
+			ParseTreeNode e2 = node.getChild(2);
+			evaluateE(e2);
+			String rel = relop.getChild(0).kind;
+			relopCompare(rel);
+		}
 	}
 
 	private void evaluateIntExpression(ParseTreeNode node){
