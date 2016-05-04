@@ -16,6 +16,7 @@ public class BPLCodeGenerator{
 	public BPLCodeGenerator(String filename) throws BPLException{
 		BPLTypeChecker typeChecker = new BPLTypeChecker(filename);
 		strings = new HashMap<String, String>();
+		globalVariables = new ArrayList<String>();
 		codeGenerate(typeChecker.parseTree);
 	}
 
@@ -67,9 +68,6 @@ public class BPLCodeGenerator{
 			depth++;
 		}
 		else if(node.kind.equals("var dec")){
-			node.setDepth(d);
-		}
-		else if(node.kind.equals("fun dec")){
 			node.setDepth(d);
 		}
 		for(ParseTreeNode child: node.getChildren()){
@@ -125,9 +123,13 @@ public class BPLCodeGenerator{
 		}
 	}
 
+
 	//generates code
 	private void generateCode(ParseTreeNode node){
-		if(node.kind.equals("if statement")){
+		if(node.kind.equals("fun dec")){
+			generateFunDec(node);
+		}
+		else if(node.kind.equals("if statement")){
 			generateIfStatement(node);
 		}
 		else if(node.kind.equals("while statement")){
@@ -170,6 +172,47 @@ public class BPLCodeGenerator{
 		}
 	}
 
+	private void generateFunDec(ParseTreeNode fd){
+		String id = fd.getChild(1).getChild(0).kind;
+		System.out.println(id+":");
+		ParseTreeNode cs = fd.getChild(3);
+		generateStatementList(cs.getChild(1));
+	}
+
+	private void generateStatementList(ParseTreeNode sl){
+		ParseTreeNode s = sl.getChild(0);
+		if(!s.kind.equals("empty")){
+			generateStatement(s);
+			generateStatementList(sl.getChild(1));
+		}
+	}
+
+	private void generateStatement(ParseTreeNode s){
+		ParseTreeNode child = s.getChild(0);
+		if(child.kind.equals("if statement")){
+			generateIfStatement(child);
+		}
+		else if(child.kind.equals("while statement")){
+			generateWhileStatement(child);
+		}
+		else if(child.kind.equals("return statement")){
+			generateReturnStatement(child);
+		}
+		else if(child.kind.equals("write statement") || child.kind.equals("writeln statement")){
+			generateWriteStatement(child);
+		}
+		else if(child.kind.equals("expression statement")){
+			generateExpression(child.getChild(0));
+		}
+		else if(child.kind.equals("compound statement")){
+			generateCompoundStatement(child);
+		}
+	}
+
+	private void generateCompoundStatement(ParseTreeNode node){
+
+	}
+
 	private void generateIfStatement(ParseTreeNode node){
 
 	}
@@ -208,9 +251,10 @@ public class BPLCodeGenerator{
 			System.out.println("call printf");
 		}
 		else{
-			String type = node.getChild(0).getType();
+			ParseTreeNode exp = node.getChild(0);
+			String type = exp.getType();
 			if(type.equals("int")){
-				//TODO: evaluate expression
+				evaluateExpression(exp);
 				System.out.println("movq $.WriteIntString, %rdi //prepare to write an int");
 				System.out.println("movl $0, %eax //reset ret");
 				System.out.println("call printf");
@@ -224,6 +268,46 @@ public class BPLCodeGenerator{
 			}
 		}
 		
+	}
+
+	private void evaluateCompExp(ParseTreeNode node){
+		System.out.println("movq $5, %rax");
+		//ParseTreeNode child0 = node.getChild(0);
+	}
+
+	private void evaluateIntExpression(ParseTreeNode node){
+		ParseTreeNode child = node.getChild(0);
+		if(child.kind.equals("comp exp")){
+			evaluateCompExp(child);
+		}
+		else{
+
+		}
+	}
+
+	private void evaluateStringExpression(ParseTreeNode node){
+
+	}
+
+	private void evaluateExpression(ParseTreeNode exp){
+		if(exp.getType().equals("int")){
+			evaluateIntExpression(exp);
+		}
+		else if(exp.getType().equals("string")){
+			evaluateStringExpression(exp);
+		}
+		else if(exp.getType().equals("int ptr")){
+			
+		}
+		else if(exp.getType().equals("string ptr")){
+			
+		}
+		else if(exp.getType().equals("int arr")){
+			
+		}
+		else if(exp.getType().equals("string arr")){
+			
+		}
 	}
 
 	private void generateExpression(ParseTreeNode node){
