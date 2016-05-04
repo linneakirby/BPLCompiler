@@ -1,0 +1,5 @@
+void x (void) {
+
+
+	write (y+2);
+}

@@ -277,8 +277,55 @@ public class BPLCodeGenerator{
 		return "L"+labelCount;
 	}
 
-	private void evaluateE(ParseTreeNode e){
+	private void evaluateF(ParseTreeNode f){
+	
 		System.out.println("movq $5, %rax");
+	}
+
+	private void evaluateT(ParseTreeNode t){
+		ParseTreeNode f = t.getChild(2);
+		evaluateF(f);
+		ParseTreeNode mulop = t.getChild(1);
+		if(mulop != null){
+			System.out.println("push %rax");
+			ParseTreeNode t2 = t.getChild(0);
+			evaluateT(t2);
+			String mo = mulop.getChild(0).kind;
+			if(mo.equals("*")){
+				System.out.println("imul 0(%rsp), %rax");
+			}
+			else{
+				System.out.println("push %rbx");
+				System.out.println("movq 0(%rsp), %rbx");
+				System.out.println("cltq");
+				System.out.println("cqto");
+				System.out.println("idiv %ebx #divide");
+				if(mo.equals("%")){
+					System.out.println("movq %rdx, %rax #get result of mod");
+				}
+				System.out.println("pop %rbx");
+			}
+			System.out.println("add $8, %rsp #pop the stack");
+		}
+	}
+
+	private void evaluateE(ParseTreeNode e){
+		ParseTreeNode t = e.getChild(2);
+		evaluateT(t);
+		ParseTreeNode addop = e.getChild(1);
+		if(addop != null){
+			System.out.println("push %rax");
+			ParseTreeNode e2 = e.getChild(0);
+			evaluateE(e2);
+			String ao = addop.getChild(0).kind;
+			if(ao.equals("+")){
+				System.out.println("add 0(%rsp), %rax");
+			}
+			else{
+				System.out.println("sub 0(%rsp), %rax");
+			}
+			System.out.println("add $8, %rsp #pop the stack");
+		}
 	}
 
 	private void relopCompare(String relop){
@@ -286,10 +333,10 @@ public class BPLCodeGenerator{
 		String label2 = makeLabel();
 		System.out.println("cmp %eax, 0(%rsp) #relop compare");
 		if(relop.equals("<=")){
-			System.out.println("jge "+label);
+			System.out.println("jg "+label);
 		}
 		else if(relop.equals("<")){
-			System.out.println("jg "+label);
+			System.out.println("jge "+label);
 		}
 		else if(relop.equals("==")){
 			System.out.println("jne "+label);
@@ -298,10 +345,10 @@ public class BPLCodeGenerator{
 			System.out.println("je "+label);
 		}
 		else if(relop.equals(">")){
-			System.out.println("jl "+label);
+			System.out.println("jle "+label);
 		}
 		else if(relop.equals(">=")){
-			System.out.println("jle "+label);
+			System.out.println("jl "+label);
 		}
 		System.out.println("mov $1, %rax #condition is true");
 		System.out.println("jmp "+label2);
