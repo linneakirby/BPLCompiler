@@ -263,7 +263,7 @@ public class BPLCodeGenerator{
 			}
 			else if(type.equals("string")){
 				String str = findString(node);
-				System.out.println("movq "+strings.get(str)+", %rsi #move "+strings.get(str)+" into 2nd arg to prepare for printing");
+				System.out.println("movq $"+strings.get(str)+", %rsi #move "+strings.get(str)+" into 2nd arg to prepare for printing");
 				System.out.println("movq $.WriteStringString, %rdi #prepare to write a string");
 				System.out.println("movl $0, %eax #reset ret");
 				System.out.println("call printf");
@@ -277,9 +277,77 @@ public class BPLCodeGenerator{
 		return "L"+labelCount;
 	}
 
+	private void evaluateArgList(ParseTreeNode al){
+		if(!al.kind.equals("empty"){
+			evaluateArgList(al.getChild(1));
+			evaluateExpression(al.getChild(0));
+			System.out.println("push %rax #push arg onto stack");	
+		}
+	}
+
+	private void evaluateFunCall(ParseTreeNode fc){
+		ParseTreeNode args = fc.getChild(1);
+		ParseTreeNode al = args.getChild(0);
+		evaluateArgList(al);
+		System.out.println("j "+fc.getChild(0).getChild(0).kind+" #jump to "+fc.getChild(0).getChild(0).kind);
+	}
+
+	private void evaluateFactor(ParseTreeNode factor){
+		ParseTreeNode child = factor.getChild(0);
+		if(child.kind.equals("expression")){
+			evaluateExpression(child);
+		}
+		else if(child.kind.equals("num")){
+			System.out.println("movq $"+child.getChild(0).kind+", %rax #move num to rax");
+		}
+		else if(child.kind.equals("string literal")){
+			String string = strings.get(child.getChild(0).kind);
+			System.out.println("movq $"+string+", %rax #move string literal to rax");
+		}
+		else if(child.kind.equals("read")){
+
+		}
+		else if(child.kind.equals("*")){
+			ParseTreeNode id = factor.getChild(1);
+
+		}
+		else if(child.kind.equals("id")){
+			ParseTreeNode exp = factor.getChild(2);
+			//if <id>[EXPRESSION]
+			if(exp != null){
+
+			}
+			//else <id>
+			else{
+
+			}
+		}
+		else if(child.kind.equals("fun call")){
+			evaluateFunCall(child);
+		}
+	}
+
 	private void evaluateF(ParseTreeNode f){
 	
-		System.out.println("movq $5, %rax");
+		ParseTreeNode child = f.getChild(0);
+		if(child.kind.equals("-")){
+			ParseTreeNode f2 = f.getChild(1);
+			evaluateF(f2);
+			System.out.println("negl %rax");
+		}
+		else if (child.kind.equals("&")){
+			ParseTreeNode factor = f.getChild(1);
+			evaluateFactor(factor);
+
+		}
+		else if(child.kind.equals("*")){
+			ParseTreeNode factor = f.getChild(1);
+			evaluateFactor(factor);
+		
+		}
+		else{
+			evaluateFactor(child);
+		}
 	}
 
 	private void evaluateT(ParseTreeNode t){
@@ -295,15 +363,13 @@ public class BPLCodeGenerator{
 				System.out.println("imul 0(%rsp), %rax");
 			}
 			else{
-				System.out.println("push %rbx");
-				System.out.println("movq 0(%rsp), %rbx");
+				System.out.println("movq 0(%rsp), %rbp");
 				System.out.println("cltq");
 				System.out.println("cqto");
-				System.out.println("idiv %ebx #divide");
+				System.out.println("idivl %ebp #divide");
 				if(mo.equals("%")){
 					System.out.println("movq %rdx, %rax #get result of mod");
 				}
-				System.out.println("pop %rbx");
 			}
 			System.out.println("add $8, %rsp #pop the stack");
 		}
