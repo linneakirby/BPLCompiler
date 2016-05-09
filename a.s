@@ -30,7 +30,7 @@ movl $0, %eax #reset ret
 call printf
 ret #return
 main:
-GOT A DEC: var dec
+movq $5, %rax #move num to rax
 movq %rax, %rsi #move num into 2nd arg to prepare for printing
 movq $.WriteIntString, %rdi #prepare to write an int
 movl $0, %eax #reset ret
@@ -38,7 +38,7 @@ call printf
 movq $.WritelnString, %rdi #prepare to write a new line
 movl $0, %eax #reset ret
 call printf
-GOT A DEC: var dec
+movq $6, %rax #move num to rax
 movq %rax, %rsi #move num into 2nd arg to prepare for printing
 movq $.WriteIntString, %rdi #prepare to write an int
 movl $0, %eax #reset ret

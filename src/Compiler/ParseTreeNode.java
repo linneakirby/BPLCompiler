@@ -15,12 +15,21 @@ public class ParseTreeNode{
 	private String expression; //actual code
 	private String type; //for type checking
 	private int depth;
+	private int position;
 
 	public ParseTreeNode(Token tok, int numchildren, String kind){
 		this.lineNumber = tok.lineNumber;
 		this.numchildren = numchildren;
 		this.kind = kind;
 		children = new ParseTreeNode[this.numchildren];
+	}
+
+	public void setPosition(int p){
+		position = p;
+	}
+
+	public int getPosition(){
+		return position;
 	}
 
 	public void setDepth(int d){

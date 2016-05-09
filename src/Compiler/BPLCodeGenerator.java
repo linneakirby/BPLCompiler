@@ -61,12 +61,12 @@ public class BPLCodeGenerator{
 
 	private void addDepthsHelper(ParseTreeNode node, int depth){
 		int d = depth;
+
 		if(node.kind.equals("param")){
 			node.setDepth(1);
-
 		}
 		else if(node.kind.equals("compound statement")){
-			depth++;
+			d++;
 		}
 		else if(node.kind.equals("var dec")){
 			node.setDepth(d);
@@ -457,7 +457,8 @@ public class BPLCodeGenerator{
 		}
 		else{ //VAR = EXPRESSION
 			ParseTreeNode varChild0 = child.getChild(0);
-			if(varChild0.kind.equals("*"){ //*<id>
+			evaluateIntExpression(node.getChild(1));
+			if(varChild0.kind.equals("*")){ //*<id>
 				//TODO
 			}
 			else{
@@ -471,7 +472,7 @@ public class BPLCodeGenerator{
 					
 					int decDepth = dec.getDepth();
 					if(decDepth == 0){
-						System.out.println("mov "+id+", %rax #move "+id+" to rax");
+						System.out.println("movq %rax, "+id+" #set value of "+id);
 					}
 					else if(decDepth == 1){
 					//TODO

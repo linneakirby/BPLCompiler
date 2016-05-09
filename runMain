@@ -3,4 +3,4 @@ cd bin
 #java Compiler.BPLScanner ../testFiles/example1.txt
 #java Compiler.BPLParser ../testFiles/multFunc.bpl
 #java Compiler.BPLTypeChecker ../testFiles/hiBob.bpl
-java Compiler.BPLCodeGenerator ../testFiles/multFunc.bpl
+java Compiler.BPLCodeGenerator ../testFiles/ShiyingProgram.bpl
