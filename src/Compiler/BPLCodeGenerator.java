@@ -178,6 +178,7 @@ public class BPLCodeGenerator{
 		System.out.println(id+":");
 		ParseTreeNode cs = fd.getChild(3);
 		generateStatementList(cs.getChild(1));
+		System.out.println("ret #return");
 	}
 
 	private void generateStatementList(ParseTreeNode sl){
@@ -203,7 +204,7 @@ public class BPLCodeGenerator{
 			generateWriteStatement(child);
 		}
 		else if(child.kind.equals("expression statement")){
-			generateExpression(child.getChild(0));
+			evaluateExpression(child.getChild(0));
 		}
 		else if(child.kind.equals("compound statement")){
 			generateCompoundStatement(child);
@@ -278,7 +279,7 @@ public class BPLCodeGenerator{
 	}
 
 	private void evaluateArgList(ParseTreeNode al){
-		if(!al.kind.equals("empty"){
+		if(!al.kind.equals("empty")){
 			evaluateArgList(al.getChild(1));
 			evaluateExpression(al.getChild(0));
 			System.out.println("push %rax #push arg onto stack");	
@@ -289,7 +290,7 @@ public class BPLCodeGenerator{
 		ParseTreeNode args = fc.getChild(1);
 		ParseTreeNode al = args.getChild(0);
 		evaluateArgList(al);
-		System.out.println("j "+fc.getChild(0).getChild(0).kind+" #jump to "+fc.getChild(0).getChild(0).kind);
+		System.out.println("call "+fc.getChild(0).getChild(0).kind+" #call "+fc.getChild(0).getChild(0).kind);
 	}
 
 	private void evaluateFactor(ParseTreeNode factor){
@@ -315,10 +316,22 @@ public class BPLCodeGenerator{
 			ParseTreeNode exp = factor.getChild(2);
 			//if <id>[EXPRESSION]
 			if(exp != null){
-
+			//TODO
 			}
 			//else <id>
 			else{
+				ParseTreeNode dec = child.getChild(0).getDeclaration();
+				String id = child.getChild(0).kind;
+				int decDepth = dec.getDepth();
+				if(decDepth == 0){
+					System.out.println("mov "+id+", %rax #move "+id+" to rax");
+				}
+				else if(decDepth == 1){
+				//TODO
+				}
+				else{
+				//TODO
+				}
 
 			}
 		}
@@ -442,65 +455,62 @@ public class BPLCodeGenerator{
 		if(child.kind.equals("comp exp")){
 			evaluateCompExp(child);
 		}
-		else{
-
+		else{ //VAR = EXPRESSION
+			ParseTreeNode varChild0 = child.getChild(0);
+			if(varChild0.kind.equals("*"){ //*<id>
+				//TODO
+			}
+			else{
+				ParseTreeNode varChild1 = child.getChild(1);
+				if(varChild1 != null){ //<id>[EXPRESSION]
+					//TODO
+				}
+				else{ //<id>
+					ParseTreeNode dec = varChild0.getChild(0).getDeclaration();
+					String id = varChild0.getChild(0).kind;
+					
+					int decDepth = dec.getDepth();
+					if(decDepth == 0){
+						System.out.println("mov "+id+", %rax #move "+id+" to rax");
+					}
+					else if(decDepth == 1){
+					//TODO
+					}
+					else{
+					//TODO
+					}
+					
+				}
+			}
 		}
 	}
 
 	private void evaluateStringExpression(ParseTreeNode node){
-
+//TODO
 	}
 
 	private void evaluateExpression(ParseTreeNode exp){
-		if(exp.getType().equals("int")){
+		if(exp.getType().equals("int") || exp.getType().equals("void")){
 			evaluateIntExpression(exp);
 		}
 		else if(exp.getType().equals("string")){
 			evaluateStringExpression(exp);
 		}
 		else if(exp.getType().equals("int ptr")){
-			
+//TODO			
 		}
 		else if(exp.getType().equals("string ptr")){
-			
+//TODO			
 		}
 		else if(exp.getType().equals("int arr")){
-			
+//TODO			
 		}
 		else if(exp.getType().equals("string arr")){
-			
+//TODO			
 		}
-	}
-
-	private void generateExpression(ParseTreeNode node){
-
-	}
-
-	private void generateCompExp(ParseTreeNode node){
-
-	}
-
-	private void generateE(ParseTreeNode node){
-
-	}
-
-	private void generateT(ParseTreeNode node){
-
-	}
-
-	private void generateF(ParseTreeNode node){
-
-	}
-
-	private void generateFactor(ParseTreeNode node){
-
 	}
 
 	private void generateRead(ParseTreeNode node){
-
-	}
-
-	private void generateFunCall(ParseTreeNode node){
 
 	}
 

@@ -317,6 +317,7 @@ public class BPLParser{
 			System.out.println("STATEMENT LIST");
 		}
 		ParseTreeNode sl = new ParseTreeNode(currentToken, 2, "statement list");
+		
 		if(checkCurrentToken(Token.T_EOF)){
 			throw new BPLException(currentToken.lineNumber, "Missing '}'");
 		}
@@ -470,6 +471,7 @@ public class BPLParser{
 			if(!checkCurrentToken(Token.T_SEMICOLON)){
 				throw new BPLException(currentToken.lineNumber, "Missing ';'");
 			}
+			getCurrentToken();
 			return w;
 		}
 		w.setChild(0, expression());
@@ -816,7 +818,7 @@ public class BPLParser{
 		ParseTreeNode a = new ParseTreeNode(currentToken, 1, "args");
 		if(checkCurrentToken(Token.T_RPAREN)){
 			a.setChild(0, empty());
-			getCurrentToken();
+		//	getCurrentToken();
 		}
 		else{
 			a.setChild(0, argList());

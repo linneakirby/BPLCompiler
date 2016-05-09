@@ -210,7 +210,7 @@ public class BPLTypeChecker{
 	private String typeCheckCompExp(ParseTreeNode node) throws BPLException{
 		String eType = typeCheck(node.getChild(0));
 		node.getChild(0).setType(eType);
-		if(!eType.contains("int") && !eType.contains("string")){
+		if(!eType.contains("int") && !eType.contains("string") && !eType.contains("void")){
 				throw new BPLException("ERROR: for E on line "+node.getChild(0).getLineNumber()+" expected type \"int\" or \"string\" or \"arr\" or \"ptr\" but was assigned type \""+eType+"\"");
 		}
 		if(node.getChild(2) != null){
@@ -233,7 +233,7 @@ public class BPLTypeChecker{
 	private String typeCheckE(ParseTreeNode node) throws BPLException{
 		String tType = typeCheck(node.getChild(2));
 		node.getChild(2).setType(tType);
-		if(!tType.contains("int") && !tType.contains("string")){
+		if(!tType.contains("int") && !tType.contains("string") && !tType.contains("void")){
 			throw new BPLException("ERROR: for T on line "+node.getChild(2).getLineNumber()+" expected type \"int\" or \"string\" or \"arr\" or \"ptr\" but was assigned type \""+tType+"\"");
 		}
 		if(node.getChild(0) != null){
@@ -256,7 +256,7 @@ public class BPLTypeChecker{
 	private String typeCheckT(ParseTreeNode node) throws BPLException{
 		String fType = typeCheck(node.getChild(2));
 		node.getChild(2).setType(fType);
-		if(!fType.contains("int") && !fType.contains("string")){
+		if(!fType.contains("int") && !fType.contains("string") && !fType.contains("void")){
 				throw new BPLException("ERROR: for F on line "+node.getChild(2).getLineNumber()+" expected type \"int\" or \"string\" or \"arr\" or \"ptr\" but was assigned type \""+fType+"\"");
 		}
 		if(node.getChild(0) != null){
@@ -306,7 +306,7 @@ public class BPLTypeChecker{
 		else{
 			type = typeCheck(node.getChild(0));
 			node.getChild(0).setType(type);
-			if(!type.contains("int") && !type.contains("string")){
+			if(!type.contains("int") && !type.contains("string") && !type.contains("void")){
 				throw new BPLException("ERROR: for F on line "+node.getChild(0).getLineNumber()+" expected type \"int\" or \"string\" or \"arr\" or \"ptr\" but was assigned type \""+type+"\"");
 			}
 			node.setType(type);
