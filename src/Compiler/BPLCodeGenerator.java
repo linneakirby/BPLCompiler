@@ -59,29 +59,82 @@ public class BPLCodeGenerator{
 		return count;
 	}
 
-	private void addDepthsHelper(ParseTreeNode node, int depth){
-		int d = depth;
-
-		if(node.kind.equals("param")){
-			node.setDepth(1);
-		}
-		else if(node.kind.equals("compound statement")){
-			d++;
-		}
-		else if(node.kind.equals("var dec")){
-			node.setDepth(d);
-		}
-		for(ParseTreeNode child: node.getChildren()){
-			if(child != null){
-				addDepthsHelper(child, d);
-			}
+	private void addDepthParamList(ParseTreeNode pl, int depth, int pos){
+		ParseTreeNode param = pl.getChild(0);
+		ParseTreeNode paramList = pl.getChild(1);
+		addDepthVar(param, depth, pos);
+		if(paramList != null){
+			addDepthParamList(paramList, depth, (pos+1));
 		}
 	}
 
-	private void addDepths(ParseTreeNode node){
+	private void addDepthVar(ParseTreeNode node, int depth, int pos){
+		ParseTreeNode id = node.getChild(0);
+		if(!id.kind.equals("id")){
+			id = node.getChild(1);
+		}
+		id.setDepth(depth);
+		id.getChild(0).setDepth(depth);
+	
+		/*if(id.getChild(0).getType().contains("arr")){
+			//TODO pos += node.getChild(2).
+		}*/
+		id.setPosition(pos);
+		id.getChild(0).setPosition(pos);
+	}
+
+	private int addDepthsHelper(ParseTreeNode node, int depth, int pos){
+		if(node.kind.equals("param list")){
+			addDepthParamList(node, 1, 0);
+			return -1;
+		}
+		else if(node.kind.equals("fun dec")){
+			pos = 0;
+		}
+		else if(node.kind.equals("compound statement")){
+			if(depth == 0){
+				depth = 2;
+			}
+			else{
+				depth++;
+			}
+		}
+		else if(node.kind.equals("var dec")){
+			addDepthVar(node, depth, pos);
+			return pos+1;
+		}
 		for(ParseTreeNode child: node.getChildren()){
 			if(child != null){
-				addDepthsHelper(child, 2);
+				int p = addDepthsHelper(child, depth, pos);
+				if(p != -1){
+					pos = p;
+				}
+			}
+		}
+
+		if(node.kind.equals("fun dec") || node.kind.equals("compound statement")){
+			return -1;
+		}
+		return pos;
+	}
+
+	private void addDepths(ParseTreeNode node){
+	
+		addDepthsHelper(node, 0, 0);
+
+		/*for(ParseTreeNode child: node.getChildren()){
+			if(child != null){
+				addDepthsHelper(child, 0, 0);
+			}
+		}*/
+	//	checkDepths(node);
+	}
+
+	private void checkDepths(ParseTreeNode node){
+		for (ParseTreeNode child: node.getChildren()){
+			if(child != null){
+				System.out.println(child.kind+" assigned depth "+child.getDepth()+" and position "+child.getPosition());
+				checkDepths(child);
 			}
 		}
 	}
@@ -173,23 +226,52 @@ public class BPLCodeGenerator{
 		}
 	}
 
+	private int getMaxPos(ParseTreeNode fd){
+		if(fd.kind.equals("var dec")){
+			if(!fd.getChild(1).kind.equals("id")){
+				fd = fd.getChild(2);
+			}
+			else{
+				fd = fd.getChild(1);
+			}
+			return fd.getChild(0).getPosition();
+		}
+		else if(fd.getChildren().length == 0){
+			return -1;
+		}
+		int max = -1;
+		for(ParseTreeNode child: fd.getChildren()){
+			if(child != null){
+				int pos = getMaxPos(child);
+				if(pos > max){
+					max = pos;
+				}
+			}
+		}
+		return max;
+	}
+
 	private void generateFunDec(ParseTreeNode fd){
 		String id = fd.getChild(1).getChild(0).kind;
 		System.out.println(id+":");
+		System.out.println("movq %rsp, %rbx #move stack pointer to fp");
 		ParseTreeNode cs = fd.getChild(3);
-		generateStatementList(cs.getChild(1));
+		int maxPos = getMaxPos(fd);
+		System.out.println("subq $"+(8*maxPos)+", %rsp #decrement stack pointer by "+(8*maxPos)+" to make room for local vars");
+		generateStatementList(cs.getChild(1), (8*maxPos));
+		System.out.println("addq $"+(8*maxPos)+", %rsp #remove local vars");
 		System.out.println("ret #return");
 	}
 
-	private void generateStatementList(ParseTreeNode sl){
+	private void generateStatementList(ParseTreeNode sl, int stackSize){
 		ParseTreeNode s = sl.getChild(0);
 		if(!s.kind.equals("empty")){
-			generateStatement(s);
-			generateStatementList(sl.getChild(1));
+			generateStatement(s, stackSize);
+			generateStatementList(sl.getChild(1), stackSize);
 		}
 	}
 
-	private void generateStatement(ParseTreeNode s){
+	private void generateStatement(ParseTreeNode s, int stackSize){
 		ParseTreeNode child = s.getChild(0);
 		if(child.kind.equals("if statement")){
 			generateIfStatement(child);
@@ -198,7 +280,7 @@ public class BPLCodeGenerator{
 			generateWhileStatement(child);
 		}
 		else if(child.kind.equals("return statement")){
-			generateReturnStatement(child);
+			generateReturnStatement(child, stackSize);
 		}
 		else if(child.kind.equals("write statement") || child.kind.equals("writeln statement")){
 			generateWriteStatement(child);
@@ -212,19 +294,24 @@ public class BPLCodeGenerator{
 	}
 
 	private void generateCompoundStatement(ParseTreeNode node){
-
+		//TODO
 	}
 
 	private void generateIfStatement(ParseTreeNode node){
-
+		//TODO
 	}
 
 	private void generateWhileStatement(ParseTreeNode node){
-
+		//TODO
 	}
 
-	private void generateReturnStatement(ParseTreeNode node){
-
+	private void generateReturnStatement(ParseTreeNode node, int stackSize){
+		ParseTreeNode exp = node.getChild(0);
+		if(exp != null){
+			evaluateExpression(exp);
+		}
+		System.out.println("addq "+stackSize+", %rsp #restoring stack to original size");
+		System.out.println("ret #return");
 	}
 
 
@@ -278,19 +365,24 @@ public class BPLCodeGenerator{
 		return "L"+labelCount;
 	}
 
-	private void evaluateArgList(ParseTreeNode al){
-		if(!al.kind.equals("empty")){
-			evaluateArgList(al.getChild(1));
+	private int evaluateArgList(ParseTreeNode al){
+		if(al != null && !al.kind.equals("empty")){
+			int x = 1+evaluateArgList(al.getChild(1));
 			evaluateExpression(al.getChild(0));
 			System.out.println("push %rax #push arg onto stack");	
+			return x;
 		}
+		return 0;
 	}
 
 	private void evaluateFunCall(ParseTreeNode fc){
 		ParseTreeNode args = fc.getChild(1);
 		ParseTreeNode al = args.getChild(0);
-		evaluateArgList(al);
+		int x = evaluateArgList(al);
+		System.out.println("push %rbx #push fp");
 		System.out.println("call "+fc.getChild(0).getChild(0).kind+" #call "+fc.getChild(0).getChild(0).kind);
+		System.out.println("pop %rbx #pop fp");
+		System.out.println("addq $"+x*8+", %rsp #remove args from stack");
 	}
 
 	private void evaluateFactor(ParseTreeNode factor){
@@ -321,16 +413,28 @@ public class BPLCodeGenerator{
 			//else <id>
 			else{
 				ParseTreeNode dec = child.getChild(0).getDeclaration();
+				if(dec.kind.equals("param")){
+					if(dec.getChild(1).kind.equals("*")){
+						dec = dec.getChild(2);
+					}
+					else{
+						dec = dec.getChild(1);
+					}
+				}
+				
 				String id = child.getChild(0).kind;
 				int decDepth = dec.getDepth();
+					
 				if(decDepth == 0){
-					System.out.println("mov "+id+", %rax #move "+id+" to rax");
+					System.out.println("movq "+id+", %rax #move "+id+" to rax");
 				}
-				else if(decDepth == 1){
-				//TODO
+				else if(decDepth == 1){ //params
+					int pos = 16+8*dec.getPosition();
+					System.out.println("movq "+pos+"(%rbx), %rax #move "+id+" to rax");
 				}
-				else{
-				//TODO
+				else{ //local vars
+					int pos = -8*dec.getPosition()-8;
+					System.out.println("movq "+pos+"(%rbx), %rax #move "+id+" to rax");
 				}
 
 			}
@@ -467,18 +571,29 @@ public class BPLCodeGenerator{
 					//TODO
 				}
 				else{ //<id>
-					ParseTreeNode dec = varChild0.getChild(0).getDeclaration();
-					String id = varChild0.getChild(0).kind;
-					
+					ParseTreeNode dec = child.getChild(0).getChild(0).getDeclaration();
+					if(dec.kind.equals("param")){
+						if(dec.getChild(1).kind.equals("*")){
+							dec = dec.getChild(2);
+						}
+						else{
+							dec = dec.getChild(1);
+						}
+					}
+				
+					String id = child.getChild(0).getChild(0).kind;
 					int decDepth = dec.getDepth();
+				
 					if(decDepth == 0){
 						System.out.println("movq %rax, "+id+" #set value of "+id);
 					}
-					else if(decDepth == 1){
-					//TODO
+					else if(decDepth == 1){ //params
+						int pos = 16+8*dec.getPosition();
+						System.out.println("movq %rax, "+pos+"(%rbx) #move rax into position");
 					}
-					else{
-					//TODO
+					else{ //local vars
+						int pos = -8*dec.getPosition()-8;
+						System.out.println("movq %rax, "+pos+"(%rbx) #move rax into position");
 					}
 					
 				}
