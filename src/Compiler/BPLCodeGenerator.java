@@ -385,8 +385,8 @@ public class BPLCodeGenerator{
 				System.out.println("call printf");
 			}
 			else if(type.equals("string")){
-				String str = findString(node);
-				System.out.println("movq $"+strings.get(str)+", %rsi #move "+strings.get(str)+" into 2nd arg to prepare for printing");
+				evaluateExpression(exp);
+				System.out.println("movq %rax, %rsi #move rax into 2nd arg to prepare for printing");
 				System.out.println("movq $.WriteStringString, %rdi #prepare to write a string");
 				System.out.println("movl $0, %eax #reset ret");
 				System.out.println("call printf");
@@ -433,6 +433,15 @@ public class BPLCodeGenerator{
 			System.out.println("movq $"+string+", %rax #move string literal to rax");
 		}
 		else if(child.kind.equals("read")){
+			System.out.println("subq $40, %rsp #prepare to read");
+			System.out.println("movq $0, %rax");
+			System.out.println("addq $24, %rsi");
+			System.out.println("movq $.ReadIntString, %rdi"0;
+			System.out.println("push %rbx #push fp");
+			System.out.println("call scanf #scan");
+			System.out.println("pop %rbx #pop fp off stack");
+			System.out.println("movq 24(%rsp), %rax");
+			System.out.println("addq $40, %rsp");
 
 		}
 		else if(child.kind.equals("*")){
@@ -591,14 +600,14 @@ public class BPLCodeGenerator{
 		}
 	}
 
-	private void evaluateIntExpression(ParseTreeNode node){
+	private void evaluateIntStringExpression(ParseTreeNode node){
 		ParseTreeNode child = node.getChild(0);
 		if(child.kind.equals("comp exp")){
 			evaluateCompExp(child);
 		}
 		else{ //VAR = EXPRESSION
 			ParseTreeNode varChild0 = child.getChild(0);
-			evaluateIntExpression(node.getChild(1));
+			evaluateIntStringExpression(node.getChild(1));
 			if(varChild0.kind.equals("*")){ //*<id>
 				//TODO
 			}
@@ -638,16 +647,12 @@ public class BPLCodeGenerator{
 		}
 	}
 
-	private void evaluateStringExpression(ParseTreeNode node){
-//TODO
-	}
-
 	private void evaluateExpression(ParseTreeNode exp){
 		if(exp.getType().equals("int") || exp.getType().equals("void")){
-			evaluateIntExpression(exp);
+			evaluateIntStringExpression(exp);
 		}
 		else if(exp.getType().equals("string")){
-			evaluateStringExpression(exp);
+			evaluateIntStringExpression(exp);
 		}
 		else if(exp.getType().equals("int ptr")){
 //TODO			
