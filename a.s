@@ -7,7 +7,7 @@
 .s1: .string "primes are "
 .text
 .globl main
-isPrime:
+is_prime:
 movq %rsp, %rbx #move stack pointer to fp
 subq $8, %rsp #decrement stack pointer by 8 to make room for local vars
 movq 16(%rbx), %rax #move n to rax
@@ -139,7 +139,7 @@ je L14 #jump to L14 if false
 movq -8(%rbx), %rax #move n to rax
 push %rax #push arg onto stack
 push %rbx #push fp
-call isPrime #call isPrime
+call is_prime #call is_prime
 pop %rbx #pop fp
 addq $8, %rsp #remove args from stack
 cmp $0, %eax #compare result to 0

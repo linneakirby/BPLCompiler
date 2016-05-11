@@ -1,4 +1,4 @@
-int isPrime(int n) {
+int is_prime(int n) {
     int divisor;
     if (n < 2) {
         return 0;
@@ -27,7 +27,7 @@ void main(void) {
     write(max);
     write("primes are ");
     while (cur < max) {
-        if (isPrime(n)) {
+        if (is_prime(n)) {
             write(n);
             cur = cur + 1;
         }

@@ -225,7 +225,7 @@ public class BPLScanner{
 		if(Character.isDigit(peek) && (isNum || isId)){
 			valid = true;
 		}
-		else if(Character.isLetter(peek) && (isId)){
+		else if((Character.isLetter(peek) || peek == '_') && (isId)){
 			valid = true;
 		}
 		else if(isComment){
