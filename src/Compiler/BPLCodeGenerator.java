@@ -294,7 +294,7 @@ public class BPLCodeGenerator{
 	}
 
 	private void generateCompoundStatement(ParseTreeNode node, int stackSize){
-		//TODO
+		generateStatementList(node.getChild(1), stackSize);
 	}
 
 	private void generateIfStatement(ParseTreeNode node, int stackSize){
@@ -304,20 +304,39 @@ public class BPLCodeGenerator{
 		evaluateExpression(exp);
 
 		String label1 = makeLabel();
-		String label2;
-		if(s2 != null){
-			label2 = makeLabel();
-		}
+		String label2 = "TEST";
 
 		System.out.println("cmp $0, %eax #compare result to 0");
 		System.out.println("je "+label1+" #jump to "+label1+" if false");
 		generateStatement(s1, stackSize);
+		if(s2 != null){
+			label2 = makeLabel();
+			System.out.println("jmp "+label2+" #jump to "+label2+" to skip else");
+		}
+
 		System.out.println(label1+":");
+
+		if(s2 != null){
+			generateStatement(s2, stackSize);
+			System.out.println(label2+":");
+		}
 
 	}
 
 	private void generateWhileStatement(ParseTreeNode node, int stackSize){
-		//TODO
+		ParseTreeNode exp = node.getChild(0);
+		ParseTreeNode s = node.getChild(1);
+		evaluateExpression(exp);
+
+		String label1 = makeLabel();
+		String label2 = makeLabel();
+
+		System.out.println(label1+":");
+		System.out.println("cmp $0, %eax #compare result to 0");
+		System.out.println("je "+label2+" #jump to "+label2+" if false");
+		generateStatement(s, stackSize);
+		System.out.println("jmp "+label1+" #jump to "+label1+" to continue while loop");
+		System.out.println(label2+":");
 	}
 
 	private void generateReturnStatement(ParseTreeNode node, int stackSize){
