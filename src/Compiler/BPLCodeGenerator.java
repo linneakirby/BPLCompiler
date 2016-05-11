@@ -32,6 +32,7 @@ public class BPLCodeGenerator{
 		System.out.println(".WriteIntString: .string \"%d \"");
 		System.out.println(".WritelnString: .string \"\\n\"");
 		System.out.println(".WriteStringString: .string \"%s\"");
+		System.out.println(".ReadIntString: .string \"%d\"");
 
 		findStrings(root, 0);
 		findGlobalVariables(root);
@@ -435,8 +436,9 @@ public class BPLCodeGenerator{
 		else if(child.kind.equals("read")){
 			System.out.println("subq $40, %rsp #prepare to read");
 			System.out.println("movq $0, %rax");
+			System.out.println("mov %rsp, %rsi");
 			System.out.println("addq $24, %rsi");
-			System.out.println("movq $.ReadIntString, %rdi"0;
+			System.out.println("movq $.ReadIntString, %rdi");
 			System.out.println("push %rbx #push fp");
 			System.out.println("call scanf #scan");
 			System.out.println("pop %rbx #pop fp off stack");
