@@ -237,9 +237,9 @@ public class BPLCodeGenerator{
 			return fd.getChild(0).getPosition();
 		}
 		else if(fd.getChildren().length == 0){
-			return 0;
+			return -1;
 		}
-		int max = 0;
+		int max = -1;
 		for(ParseTreeNode child: fd.getChildren()){
 			if(child != null){
 				int pos = getMaxPos(child);
@@ -256,10 +256,11 @@ public class BPLCodeGenerator{
 		System.out.println(id+":");
 		System.out.println("movq %rsp, %rbx #move stack pointer to fp");
 		ParseTreeNode cs = fd.getChild(3);
-		int maxPos = getMaxPos(fd);
-		System.out.println("subq $"+(8*maxPos)+", %rsp #decrement stack pointer by "+(8*maxPos)+" to make room for local vars");
-		generateStatementList(cs.getChild(1), (8*maxPos));
-		System.out.println("addq $"+(8*maxPos)+", %rsp #remove local vars");
+		int space2Alloc = getMaxPos(fd)+1;
+
+		System.out.println("subq $"+(8*space2Alloc)+", %rsp #decrement stack pointer by "+(8*space2Alloc)+" to make room for local vars");
+		generateStatementList(cs.getChild(1), (8*space2Alloc));
+		System.out.println("addq $"+(8*space2Alloc)+", %rsp #remove local vars");
 		System.out.println("ret #return");
 	}
 
@@ -326,12 +327,12 @@ public class BPLCodeGenerator{
 	private void generateWhileStatement(ParseTreeNode node, int stackSize){
 		ParseTreeNode exp = node.getChild(0);
 		ParseTreeNode s = node.getChild(1);
-		evaluateExpression(exp);
 
 		String label1 = makeLabel();
 		String label2 = makeLabel();
 
 		System.out.println(label1+":");
+		evaluateExpression(exp);
 		System.out.println("cmp $0, %eax #compare result to 0");
 		System.out.println("je "+label2+" #jump to "+label2+" if false");
 		generateStatement(s, stackSize);

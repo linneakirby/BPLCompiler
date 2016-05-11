@@ -7,23 +7,23 @@
 .globl main
 whileTest:
 movq %rsp, %rbx #move stack pointer to fp
-subq $0, %rsp #decrement stack pointer by 0 to make room for local vars
+subq $16, %rsp #decrement stack pointer by 16 to make room for local vars
 movq $0, %rax #move num to rax
 movq %rax, -8(%rbx) #move rax into position
+L0:
 movq -8(%rbx), %rax #move i to rax
 push %rax
-movq $10, %rax #move num to rax
+movq $5, %rax #move num to rax
 cmp %eax, 0(%rsp) #relop compare
-je L0
+je L2
 mov $1, %rax #condition is true
-jmp L1
-L0:
-mov $0, %rax #condition is false
-L1:
-add $8, %rsp #pop the stack
+jmp L3
 L2:
+mov $0, %rax #condition is false
+L3:
+add $8, %rsp #pop the stack
 cmp $0, %eax #compare result to 0
-je L3 #jump to L3 if false
+je L1 #jump to L1 if false
 movq $1, %rax #move num to rax
 push %rax
 movq -8(%rbx), %rax #move i to rax
@@ -42,12 +42,44 @@ call printf
 movq $.WritelnString, %rdi #prepare to write a new line
 movl $0, %eax #reset ret
 call printf
-jmp L2 #jump to L2 to continue while loop
-L3:
+movq $0, %rax #move num to rax
+movq %rax, -16(%rbx) #move rax into position
+L4:
+movq -16(%rbx), %rax #move l to rax
+push %rax
+movq $3, %rax #move num to rax
+cmp %eax, 0(%rsp) #relop compare
+jge L6
+mov $1, %rax #condition is true
+jmp L7
+L6:
+mov $0, %rax #condition is false
+L7:
+add $8, %rsp #pop the stack
+cmp $0, %eax #compare result to 0
+je L5 #jump to L5 if false
+movq $1, %rax #move num to rax
+push %rax
+movq -16(%rbx), %rax #move l to rax
+add 0(%rsp), %rax
+add $8, %rsp #pop the stack
+movq %rax, -16(%rbx) #move rax into position
+movq -16(%rbx), %rax #move l to rax
+movq %rax, %rsi #move num into 2nd arg to prepare for printing
+movq $.WriteIntString, %rdi #prepare to write an int
+movl $0, %eax #reset ret
+call printf
+movq $.WritelnString, %rdi #prepare to write a new line
+movl $0, %eax #reset ret
+call printf
+jmp L4 #jump to L4 to continue while loop
+L5:
+jmp L0 #jump to L0 to continue while loop
+L1:
 movq -8(%rbx), %rax #move i to rax
-addq $0, %rsp #restoring stack to original size
+addq $16, %rsp #restoring stack to original size
 ret #return
-addq $0, %rsp #remove local vars
+addq $16, %rsp #remove local vars
 ret #return
 main:
 movq %rsp, %rbx #move stack pointer to fp
