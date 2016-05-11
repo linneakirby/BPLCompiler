@@ -237,9 +237,9 @@ public class BPLCodeGenerator{
 			return fd.getChild(0).getPosition();
 		}
 		else if(fd.getChildren().length == 0){
-			return -1;
+			return 0;
 		}
-		int max = -1;
+		int max = 0;
 		for(ParseTreeNode child: fd.getChildren()){
 			if(child != null){
 				int pos = getMaxPos(child);
@@ -274,10 +274,10 @@ public class BPLCodeGenerator{
 	private void generateStatement(ParseTreeNode s, int stackSize){
 		ParseTreeNode child = s.getChild(0);
 		if(child.kind.equals("if statement")){
-			generateIfStatement(child);
+			generateIfStatement(child, stackSize);
 		}
 		else if(child.kind.equals("while statement")){
-			generateWhileStatement(child);
+			generateWhileStatement(child, stackSize);
 		}
 		else if(child.kind.equals("return statement")){
 			generateReturnStatement(child, stackSize);
@@ -289,19 +289,34 @@ public class BPLCodeGenerator{
 			evaluateExpression(child.getChild(0));
 		}
 		else if(child.kind.equals("compound statement")){
-			generateCompoundStatement(child);
+			generateCompoundStatement(child, stackSize);
 		}
 	}
 
-	private void generateCompoundStatement(ParseTreeNode node){
+	private void generateCompoundStatement(ParseTreeNode node, int stackSize){
 		//TODO
 	}
 
-	private void generateIfStatement(ParseTreeNode node){
-		//TODO
+	private void generateIfStatement(ParseTreeNode node, int stackSize){
+		ParseTreeNode exp = node.getChild(0);
+		ParseTreeNode s1 = node.getChild(1);
+		ParseTreeNode s2 = node.getChild(2);
+		evaluateExpression(exp);
+
+		String label1 = makeLabel();
+		String label2;
+		if(s2 != null){
+			label2 = makeLabel();
+		}
+
+		System.out.println("cmp $0, %eax #compare result to 0");
+		System.out.println("je "+label1+" #jump to "+label1+" if false");
+		generateStatement(s1, stackSize);
+		System.out.println(label1+":");
+
 	}
 
-	private void generateWhileStatement(ParseTreeNode node){
+	private void generateWhileStatement(ParseTreeNode node, int stackSize){
 		//TODO
 	}
 
@@ -310,7 +325,7 @@ public class BPLCodeGenerator{
 		if(exp != null){
 			evaluateExpression(exp);
 		}
-		System.out.println("addq "+stackSize+", %rsp #restoring stack to original size");
+		System.out.println("addq $"+stackSize+", %rsp #restoring stack to original size");
 		System.out.println("ret #return");
 	}
 
@@ -413,7 +428,8 @@ public class BPLCodeGenerator{
 			//else <id>
 			else{
 				ParseTreeNode dec = child.getChild(0).getDeclaration();
-				if(dec.kind.equals("param")){
+				
+				if(dec.kind.equals("param") || dec.kind.equals("var dec")){
 					if(dec.getChild(1).kind.equals("*")){
 						dec = dec.getChild(2);
 					}
@@ -423,6 +439,7 @@ public class BPLCodeGenerator{
 				}
 				
 				String id = child.getChild(0).kind;
+
 				int decDepth = dec.getDepth();
 					
 				if(decDepth == 0){
@@ -572,7 +589,7 @@ public class BPLCodeGenerator{
 				}
 				else{ //<id>
 					ParseTreeNode dec = child.getChild(0).getChild(0).getDeclaration();
-					if(dec.kind.equals("param")){
+					if(dec.kind.equals("param") || dec.kind.equals("var dec")){
 						if(dec.getChild(1).kind.equals("*")){
 							dec = dec.getChild(2);
 						}
