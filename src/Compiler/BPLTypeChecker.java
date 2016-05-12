@@ -10,7 +10,7 @@ import java.lang.String;
 
 public class BPLTypeChecker{
 
-	private boolean debug = true;
+	private boolean debug = false;
 
 	private HashMap<String, ParseTreeNode> symbolTable;
 	private LinkedList<ParseTreeNode> localDecs;
@@ -315,12 +315,12 @@ public class BPLTypeChecker{
 			if(f0.kind.equals("-") && !type.equals("int")){
 				throw new BPLException("ERROR: for F on line "+node.getChild(1).getLineNumber()+" expected type \"int\" but was assigned type \""+type+"\"");
 			}
-		/*	else if(f0.kind.equals("*")){
-			  if(!type.contains("ptr")){
+			else if(f0.kind.equals("*")){
+			  /*if(!type.contains("ptr")){
 			  throw new BPLException("ERROR: for F on line "+node.getChild(1).getLineNumber()+" expected type \"int ptr\" or \"string ptr\" but was assigned type \""+type+"\"");
-			  }
-			  type.replace(" ptr", "");
 			  }*/
+			  type.replace(" ptr", "");
+			  }
 			  else if(f0.kind.equals("&")){
 				  type+=" ptr";
 			  }
@@ -426,7 +426,10 @@ public class BPLTypeChecker{
 			param = paramList.getChild(0);
 			//pType = param.getChild(0).getChild(0).kind;
 			pType = param.getType();
-			
+			if(param.getChild(1).kind.equals("*")){
+				pType = pType.concat(" ptr");
+			}
+		
 			if(!type.equals(pType)){
 				throw new BPLException("ERROR: EXPRESSION on line "+node.getLineNumber()+" expected type \""+pType+"\" but was assigned type \""+type+"\"");
 			}
