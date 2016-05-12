@@ -466,6 +466,7 @@ public class BPLParser{
 			throw new BPLException(currentToken.lineNumber, "Missing '('");
 		}
 		getCurrentToken();
+		
 		if(checkCurrentToken(Token.T_RPAREN)){
 			getCurrentToken();
 			if(!checkCurrentToken(Token.T_SEMICOLON)){

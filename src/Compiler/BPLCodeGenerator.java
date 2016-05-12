@@ -139,7 +139,7 @@ public class BPLCodeGenerator{
 		  addDepthsHelper(child, 0, 0);
 		  }
 		  }*/
-		checkDepths(node);
+//		checkDepths(node);
 	}
 
 	private void checkDepths(ParseTreeNode node){
@@ -356,16 +356,14 @@ public class BPLCodeGenerator{
 			ParseTreeNode exp = node.getChild(0);
 			String type = exp.getType();
 			
-
-
-			if(type.equals("int")){
+			if(type.equals("int") || type.equals("int ptr")){
 				evaluateExpression(exp);
 				System.out.println("movq %rax, %rsi #move num into 2nd arg to prepare for printing");
 				System.out.println("movq $.WriteIntString, %rdi #prepare to write an int");
 				System.out.println("movl $0, %eax #reset ret");
 				System.out.println("call printf");
 			}
-			else if(type.equals("string")){
+			else if(type.equals("string") || type.equals("string ptr")){
 				evaluateExpression(exp);
 				System.out.println("movq %rax, %rsi #move rax into 2nd arg to prepare for printing");
 				System.out.println("movq $.WriteStringString, %rdi #prepare to write a string");
@@ -534,7 +532,7 @@ public class BPLCodeGenerator{
 		else if (child.kind.equals("&")){
 			ParseTreeNode factor = f.getChild(1);
 			ParseTreeNode id = factor.getChild(0);
-			ParseTreeNode dec = id.getChild(0).getDeclaration();
+			ParseTreeNode dec = id.getChild(0).getDeclaration().getChild(1);
 			String name = id.getChild(0).kind;
 			int decDepth = dec.getDepth();
 			if(factor.getChild(1)!=null){ //<id>[EXPRESSION]

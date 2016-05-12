@@ -10,7 +10,7 @@ import java.lang.String;
 
 public class BPLTypeChecker{
 
-	private boolean debug = false;
+	private boolean debug = true;
 
 	private HashMap<String, ParseTreeNode> symbolTable;
 	private LinkedList<ParseTreeNode> localDecs;
@@ -112,10 +112,10 @@ public class BPLTypeChecker{
 	private String typeCheckEnd(ParseTreeNode node) throws BPLException{
 		if(node.kind.equals("write statement")){
 			ParseTreeNode exp = node.getChild(0);
-			if(exp.getType().equals("int arr")){
+			if(exp.getType().equals("int arr") || exp.getType().equals("int ptr")){
 				exp.setType("int");
 			}
-			else if(exp.getType().equals("string arr")){
+			else if(exp.getType().equals("string arr") || exp.getType().equals("string ptr")){
 				exp.setType("string");
 			}
 		}
@@ -315,7 +315,7 @@ public class BPLTypeChecker{
 			if(f0.kind.equals("-") && !type.equals("int")){
 				throw new BPLException("ERROR: for F on line "+node.getChild(1).getLineNumber()+" expected type \"int\" but was assigned type \""+type+"\"");
 			}
-			/*else if(f0.kind.equals("*")){
+		/*	else if(f0.kind.equals("*")){
 			  if(!type.contains("ptr")){
 			  throw new BPLException("ERROR: for F on line "+node.getChild(1).getLineNumber()+" expected type \"int ptr\" or \"string ptr\" but was assigned type \""+type+"\"");
 			  }
@@ -488,13 +488,23 @@ public class BPLTypeChecker{
 
 				if(debug){
 					System.out.println(p.kind.toUpperCase()+ " on line "+p.getLineNumber()+" assigned type \""+type+"\"");
-					System.out.println("Adding "+p.kind.toUpperCase()+" \""+p.getChild(1).getChild(0).kind+"\" to the local declarations");
+					if(p.getChild(1).kind.equals("*")){
+						System.out.println("Adding "+p.kind.toUpperCase()+" \""+p.getChild(2).getChild(0).kind+"\" to the local declarations");
+					}
+					else{
+						System.out.println("Adding "+p.kind.toUpperCase()+" \""+p.getChild(1).getChild(0).kind+"\" to the local declarations");
+					}
 				}
 			}
 			if(p != null){
 				localDecs.add(p);
 				if(debug){
-					System.out.println("Adding "+p.kind.toUpperCase()+" \""+p.getChild(1).getChild(0).kind+"\" to the local declarations");
+					if(p.getChild(1).kind.equals("*")){
+						System.out.println("Adding "+p.kind.toUpperCase()+" \""+p.getChild(2).getChild(0).kind+"\" to the local declarations");
+					}
+					else{
+						System.out.println("Adding "+p.kind.toUpperCase()+" \""+p.getChild(1).getChild(0).kind+"\" to the local declarations");
+					}
 				}
 			}
 			for(ParseTreeNode child:root.getChildren()){

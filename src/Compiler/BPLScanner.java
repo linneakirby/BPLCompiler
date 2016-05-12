@@ -121,6 +121,9 @@ public class BPLScanner{
 				valid = true;
 				isComment = true;
 			}
+			else{
+				finishToken();
+			}
 		}
 		else{
 			finishToken();
@@ -180,6 +183,7 @@ public class BPLScanner{
 		tokenSoFar.append(currchar);
 		getTokenType();*/
 	}
+
 
 	private void finishToken(){
 		if(isNum){
