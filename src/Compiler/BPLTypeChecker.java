@@ -481,7 +481,7 @@ public class BPLTypeChecker{
 
 				String type = p.getChild(0).getChild(0).kind;
 
-				if(p.getChild(2).kind.equals("[")){
+				if(p.getChild(2) != null && p.getChild(2).kind.equals("[")){
 					type = type.concat(" arr");
 				}
 				p.setType(type);
@@ -514,7 +514,11 @@ public class BPLTypeChecker{
 
 			String type = root.getChild(0).getChild(0).kind;
 
-			if(root.getChild(2).kind.equals("[")){
+			/*if(root.getChild(1) != null && root.getChild(1).kind.equals("*")){
+				type = type.concat(" ptr");
+			}*/
+
+			if(root.getChild(2) != null && root.getChild(2).kind.equals("[")){
 				type = type.concat(" arr");
 			}
 			root.setType(type);
@@ -602,6 +606,10 @@ public class BPLTypeChecker{
 		int i = 1;
 		String type2 = root.getChild(0).getChild(0).kind;
 
+		if(root.getChild(1) != null && root.getChild(1).kind.equals("*")){
+			type2 = type2.concat(" ptr");
+		}
+		
 		if(root.getChild(2) != null && root.getChild(2).kind.equals("[")){
 			type2 = type2.concat(" arr");
 		}

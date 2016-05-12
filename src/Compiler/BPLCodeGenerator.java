@@ -139,7 +139,7 @@ public class BPLCodeGenerator{
 		  addDepthsHelper(child, 0, 0);
 		  }
 		  }*/
-		//	checkDepths(node);
+		checkDepths(node);
 	}
 
 	private void checkDepths(ParseTreeNode node){
@@ -263,7 +263,9 @@ public class BPLCodeGenerator{
 			generateWriteStatement(child);
 		}
 		else if(child.kind.equals("expression statement")){
-			evaluateExpression(child.getChild(0));
+			if(!child.getChild(0).kind.equals("empty")){
+				evaluateExpression(child.getChild(0));
+			}
 		}
 		else if(child.kind.equals("compound statement")){
 			generateCompoundStatement(child, stackSize);
@@ -426,6 +428,7 @@ public class BPLCodeGenerator{
 		}
 		else if(child.kind.equals("*")){
 			ParseTreeNode id = factor.getChild(1);
+			
 
 		}
 		else if(child.kind.equals("id")){
@@ -530,13 +533,51 @@ public class BPLCodeGenerator{
 		}
 		else if (child.kind.equals("&")){
 			ParseTreeNode factor = f.getChild(1);
-			evaluateFactor(factor);
-
+			ParseTreeNode id = factor.getChild(0);
+			ParseTreeNode dec = id.getChild(0).getDeclaration();
+			String name = id.getChild(0).kind;
+			int decDepth = dec.getDepth();
+			if(factor.getChild(1)!=null){ //<id>[EXPRESSION]
+				evaluateExpression(factor.getChild(2));			
+				System.out.println("push %rax #push element of array "+name);
+				
+				if(decDepth == 0){ //global var
+					System.out.println("movq $"+name+", %rax #move "+name+" to rax");
+				}
+				else if (dec.getDepth() == 1){ //params
+					int pos = 16+8*dec.getPosition();
+					System.out.println("movq "+pos+"(%rbx), %rax #move "+name+" to rax");
+				}
+				else{ //local vars
+					int pos = -8*dec.getPosition()-8;
+					System.out.println("movq %rbx, %rax #move "+name+" to rax");
+					System.out.println("addq $"+pos+", %rax");
+				}
+				System.out.println("movq %rax, %rdx #save array address");
+				System.out.println("pop %rax #pop index");
+				System.out.println("imul $8, %eax #multiply index by 8");
+				System.out.println("addq %rdx, %rax #add index to base address");
+			}
+			else{
+				if(decDepth == 0){ //global var
+					System.out.println("movq $"+name+", %rax #move "+name+" to rax");
+				}
+				else if (dec.getDepth() == 1){ //params
+					int pos = 16+8*dec.getPosition();
+					System.out.println("movq %rbx, %rax #move "+name+" to rax");
+					System.out.println("addq $"+pos+", %rax");
+				}
+				else{ //local vars
+					int pos = -8*dec.getPosition()-8;
+					System.out.println("movq %rbx, %rax #move "+name+" to rax");
+					System.out.println("addq $"+pos+", %rax");
+				}
+			}
 		}
 		else if(child.kind.equals("*")){
 			ParseTreeNode factor = f.getChild(1);
 			evaluateFactor(factor);
-
+			System.out.println("movq 0(%rax), %rax #dereference pointer");
 		}
 		else{
 			evaluateFactor(child);
@@ -639,7 +680,23 @@ public class BPLCodeGenerator{
 			ParseTreeNode varChild0 = child.getChild(0);
 			evaluateIntStringExpression(node.getChild(1));
 			if(varChild0.kind.equals("*")){ //*<id>
-				//TODO
+				ParseTreeNode id = child.getChild(1);
+				ParseTreeNode dec = id.getDeclaration();
+				String name = id.getChild(0).kind;
+				int decDepth = dec.getDepth();
+				if(decDepth == 0){ //global vars
+					System.out.println("movq $"+name+", %rdx #set value of "+name);
+				}
+				else if(decDepth == 1){ //params
+					int pos = 16 + 8*dec.getPosition();
+					System.out.println("movq "+pos+"(%rbx), %rdx");
+					System.out.println("movq %rax, 0(%rdx) #set value of "+name);
+				}
+				else{ //local vars
+					int pos = -8*dec.getPosition() -8;
+					System.out.println("movq "+pos+"(%rbx), %rdx");
+					System.out.println("movq %rax, 0(%rdx) #set value of "+name);
+				}
 			}
 			else{
 				ParseTreeNode varChild1 = child.getChild(1);
@@ -744,6 +801,7 @@ public class BPLCodeGenerator{
 	}
 
 	private void evaluateExpression(ParseTreeNode exp){
+	
 		if(exp.getType().equals("int") || exp.getType().equals("void")){
 			evaluateIntStringExpression(exp);
 		}
@@ -751,10 +809,10 @@ public class BPLCodeGenerator{
 			evaluateIntStringExpression(exp);
 		}
 		else if(exp.getType().equals("int ptr")){
-			//TODO			
+			evaluateIntStringExpression(exp);
 		}
 		else if(exp.getType().equals("string ptr")){
-			//TODO			
+			evaluateIntStringExpression(exp);
 		}
 		else if(exp.getType().equals("int arr")){
 			evaluateArrExpression(exp);
