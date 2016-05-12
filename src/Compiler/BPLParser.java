@@ -776,11 +776,13 @@ public class BPLParser{
 				getCurrentToken();
 				f.setChild(0, id());
 				getCurrentToken();
+				f.setChild(1, new ParseTreeNode(currentToken, 0, currentToken.tokenString));
 				getCurrentToken();
-				f.setChild(1, expression());
+				f.setChild(2, expression());
 				if(!checkCurrentToken(Token.T_RBRACKET)){
 					throw new BPLException(currentToken.lineNumber, "Missing ']'");
-				}
+				}	
+				f.setChild(3, new ParseTreeNode(currentToken, 0, currentToken.tokenString));
 			}
 			else{
 				ungetCurrentToken(1);

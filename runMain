@@ -1,6 +1,6 @@
 #!/bin/bash
 cd bin
 #java Compiler.BPLScanner ../testFiles/primes.bpl
-#java Compiler.BPLParser ../testFiles/primes.bpl
-#java Compiler.BPLTypeChecker ../testFiles/hiBob.bpl
-java Compiler.BPLCodeGenerator ../testFiles/primes.bpl
+java Compiler.BPLParser ../testFiles/arrTest.bpl
+java Compiler.BPLTypeChecker ../testFiles/arrTest.bpl
+#java Compiler.BPLCodeGenerator ../testFiles/primes.bpl

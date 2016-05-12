@@ -159,7 +159,7 @@ public class BPLTypeChecker{
 				node.setType(type);
 				if(debug){
 					System.out.println("EXPRESSION on line "+node.getChild(0).getLineNumber()+" assigned type \""+type+"\"");
-					System.out.println(node.getType());
+					System.out.println("GETTING TYPE: "+node.getType());
 				}
 				return type;
 			}
@@ -174,7 +174,7 @@ public class BPLTypeChecker{
 				node.getChild(1).setType(expType);
 				node.setType(varType);
 				if(debug){
-					System.out.println(node.getType());
+					System.out.println("GETTING TYPEE: "+node.getType());
 				}
 			}
 			return "none"; //TODO: FIX THIS
@@ -191,6 +191,11 @@ public class BPLTypeChecker{
 					varType = varType.concat(" ptr");
 				}
 				if(node.getChild(1) != null && node.getChild(1).kind.equals("[")){ //<id>[EXPRESSION]
+					String expType = typeCheckExpression(node.getChild(2));
+					
+					node.getChild(2).setType(expType);
+
+
 					if(varDec.getChild(2) == null || !varDec.getChild(2).kind.equals("[")){
 						throw new BPLException("ERROR: for VAR on line "+node.getLineNumber()+" expected type \""+varType+"\" arr but was assigned type \""+varType+"\"");
 					}
@@ -320,6 +325,7 @@ public class BPLTypeChecker{
 	private String typeCheckFactor(ParseTreeNode node) throws BPLException{
 		ParseTreeNode factor0 = node.getChild(0);
 		ParseTreeNode factor1 = node.getChild(1);
+		ParseTreeNode factor2 = node.getChild(2);
 		ParseTreeNode dec;
 		String type;
 		//(EXPRESSION) or FUN_CALL or read()
@@ -330,8 +336,12 @@ public class BPLTypeChecker{
 		else if(factor0.kind.equals("id")){
 			dec = factor0.getChild(0).getDeclaration();
 			type = dec.getChild(0).getChild(0).kind;
-			if(factor1 != null){
-				type.concat(" arr");
+			if(factor2 != null){
+				String expType = typeCheckExpression(factor2);
+				if(!expType.equals("int")){
+					throw new BPLException("ERROR: for Factor on line "+factor2.getLineNumber()+" expected type \"int\" but was assigned type \""+expType+"\"");
+				}
+				factor2.setType(expType);
 			}
 		}
 		//*<id>
