@@ -4,8 +4,8 @@ I affirm that I have adhered to the Honor Code in this assignment - Linnea Kirby
 
 To use the Code Generator:
 	1. Run "make" to compile the files
-	2. bplc will run the code generator's main() function with a program argument of your choice and will output to the terminal. To save to a file, use '>'
-	3. Use gcc to compile the output from the code generator.
+	2. bplc will run the code generator's main() function with a program argument of your choice and will output to a file called <filename>.s
+	3. Use gcc to assemble the output from the code generator into an executable.
 
 To use the Type Checker:
 	1. Run "make" to compile the files

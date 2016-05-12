@@ -1,4 +1,4 @@
 #!/bin/bash
 
 cd bin
-java Compiler.BPLCodeGenerator ../$1
+java Compiler.BPLCodeGenerator ../$1 > ../`basename -s '.bpl' $1`.s
