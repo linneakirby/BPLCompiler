@@ -1,0 +1,1342 @@
+LINE 2: program   {
+LINE 2:    declaration list   {
+LINE 2:       declaration   {
+LINE 2:          var dec   {
+LINE 2:             type specifier   {
+LINE 2:                int   {}
+                    }
+LINE 2:             id   {
+LINE 2:                x   {}
+                    }
+LINE 2:             [   {}
+LINE 2:             num   {
+LINE 2:                10   {}
+                    }
+LINE 2:             ]   {}
+                 }
+              }
+LINE 4:       declaration list   {
+LINE 4:          declaration   {
+LINE 4:             fun dec   {
+LINE 4:                type specifier   {
+LINE 4:                   void   {}
+                       }
+LINE 4:                id   {
+LINE 4:                   switch   {}
+                       }
+LINE 4:                params   {
+LINE 4:                   param list   {
+LINE 4:                      param   {
+LINE 4:                         type specifier   {
+LINE 4:                            int   {}
+                                }
+LINE 4:                         id   {
+LINE 4:                            A   {}
+                                }
+LINE 4:                         [   {}
+LINE 4:                         ]   {}
+                             }
+LINE 4:                      param list   {
+LINE 4:                         param   {
+LINE 4:                            type specifier   {
+LINE 4:                               int   {}
+                                   }
+LINE 4:                            id   {
+LINE 4:                               i   {}
+                                   }
+                                }
+LINE 4:                         param list   {
+LINE 4:                            param   {
+LINE 4:                               type specifier   {
+LINE 4:                                  int   {}
+                                      }
+LINE 4:                               id   {
+LINE 4:                                  j   {}
+                                      }
+                                   }
+                                }
+                             }
+                          }
+                       }
+LINE 4:                compound statement   {
+LINE 5:                   local decs   {
+LINE 5:                      var dec   {
+LINE 5:                         type specifier   {
+LINE 5:                            int   {}
+                                }
+LINE 5:                         id   {
+LINE 5:                            temp   {}
+                                }
+                             }
+LINE 6:                      local decs   {
+LINE 6:                         empty   {}
+                             }
+                          }
+LINE 6:                   statement list   {
+LINE 6:                      statement   {
+LINE 6:                         if statement   {
+LINE 6:                            expression   {
+LINE 6:                               comp exp   {
+LINE 6:                                  E   {
+LINE 6:                                     T   {
+LINE 6:                                        F   {
+LINE 6:                                           factor   {
+LINE 6:                                              id   {
+LINE 6:                                                 i   {}
+                                                     }
+                                                  }
+                                               }
+                                            }
+                                         }
+LINE 6:                                  relop   {
+LINE 6:                                     !=   {}
+                                         }
+LINE 6:                                  E   {
+LINE 6:                                     T   {
+LINE 6:                                        F   {
+LINE 6:                                           factor   {
+LINE 6:                                              id   {
+LINE 6:                                                 j   {}
+                                                     }
+                                                  }
+                                               }
+                                            }
+                                         }
+                                      }
+                                   }
+LINE 6:                            statement   {
+LINE 6:                               compound statement   {
+LINE 7:                                  local decs   {
+LINE 7:                                     empty   {}
+                                         }
+LINE 7:                                  statement list   {
+LINE 7:                                     statement   {
+LINE 7:                                        expression statement   {
+LINE 7:                                           expression   {
+LINE 7:                                              var   {
+LINE 7:                                                 id   {
+LINE 7:                                                    temp   {}
+                                                        }
+                                                     }
+LINE 7:                                              expression   {
+LINE 7:                                                 comp exp   {
+LINE 7:                                                    E   {
+LINE 7:                                                       T   {
+LINE 7:                                                          F   {
+LINE 7:                                                             factor   {
+LINE 7:                                                                id   {
+LINE 7:                                                                   A   {}
+                                                                       }
+LINE 7:                                                                [   {}
+LINE 7:                                                                expression   {
+LINE 7:                                                                   comp exp   {
+LINE 7:                                                                      E   {
+LINE 7:                                                                         T   {
+LINE 7:                                                                            F   {
+LINE 7:                                                                               factor   {
+LINE 7:                                                                                  id   {
+LINE 7:                                                                                     i   {}
+                                                                                         }
+                                                                                      }
+                                                                                   }
+                                                                                }
+                                                                             }
+                                                                          }
+                                                                       }
+LINE 7:                                                                ]   {}
+                                                                    }
+                                                                 }
+                                                              }
+                                                           }
+                                                        }
+                                                     }
+                                                  }
+                                               }
+                                            }
+LINE 8:                                     statement list   {
+LINE 8:                                        statement   {
+LINE 8:                                           expression statement   {
+LINE 8:                                              expression   {
+LINE 8:                                                 var   {
+LINE 8:                                                    id   {
+LINE 8:                                                       A   {}
+                                                           }
+LINE 8:                                                    [   {}
+LINE 8:                                                    expression   {
+LINE 8:                                                       comp exp   {
+LINE 8:                                                          E   {
+LINE 8:                                                             T   {
+LINE 8:                                                                F   {
+LINE 8:                                                                   factor   {
+LINE 8:                                                                      id   {
+LINE 8:                                                                         i   {}
+                                                                             }
+                                                                          }
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+                                                           }
+                                                        }
+LINE 8:                                                 expression   {
+LINE 8:                                                    comp exp   {
+LINE 8:                                                       E   {
+LINE 8:                                                          T   {
+LINE 8:                                                             F   {
+LINE 8:                                                                factor   {
+LINE 8:                                                                   id   {
+LINE 8:                                                                      A   {}
+                                                                          }
+LINE 8:                                                                   [   {}
+LINE 8:                                                                   expression   {
+LINE 8:                                                                      comp exp   {
+LINE 8:                                                                         E   {
+LINE 8:                                                                            T   {
+LINE 8:                                                                               F   {
+LINE 8:                                                                                  factor   {
+LINE 8:                                                                                     id   {
+LINE 8:                                                                                        j   {}
+                                                                                            }
+                                                                                         }
+                                                                                      }
+                                                                                   }
+                                                                                }
+                                                                             }
+                                                                          }
+LINE 8:                                                                   ]   {}
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+                                                           }
+                                                        }
+                                                     }
+                                                  }
+                                               }
+LINE 9:                                        statement list   {
+LINE 9:                                           statement   {
+LINE 9:                                              expression statement   {
+LINE 9:                                                 expression   {
+LINE 9:                                                    var   {
+LINE 9:                                                       id   {
+LINE 9:                                                          A   {}
+                                                              }
+LINE 9:                                                       [   {}
+LINE 9:                                                       expression   {
+LINE 9:                                                          comp exp   {
+LINE 9:                                                             E   {
+LINE 9:                                                                T   {
+LINE 9:                                                                   F   {
+LINE 9:                                                                      factor   {
+LINE 9:                                                                         id   {
+LINE 9:                                                                            j   {}
+                                                                                }
+                                                                             }
+                                                                          }
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+                                                           }
+LINE 9:                                                    expression   {
+LINE 9:                                                       comp exp   {
+LINE 9:                                                          E   {
+LINE 9:                                                             T   {
+LINE 9:                                                                F   {
+LINE 9:                                                                   factor   {
+LINE 9:                                                                      id   {
+LINE 9:                                                                         temp   {}
+                                                                             }
+                                                                          }
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+                                                           }
+                                                        }
+                                                     }
+                                                  }
+LINE 10:                                           statement list   {
+LINE 10:                                              empty   {}
+                                                  }
+                                               }
+                                            }
+                                         }
+                                      }
+                                   }
+                                }
+                             }
+LINE 11:                      statement list   {
+LINE 11:                         empty   {}
+                             }
+                          }
+                       }
+                    }
+                 }
+LINE 13:          declaration list   {
+LINE 13:             declaration   {
+LINE 13:                fun dec   {
+LINE 13:                   type specifier   {
+LINE 13:                      void   {}
+                          }
+LINE 13:                   id   {
+LINE 13:                      sort   {}
+                          }
+LINE 13:                   params   {
+LINE 13:                      param list   {
+LINE 13:                         param   {
+LINE 13:                            type specifier   {
+LINE 13:                               int   {}
+                                   }
+LINE 13:                            id   {
+LINE 13:                               A   {}
+                                   }
+LINE 13:                            [   {}
+LINE 13:                            ]   {}
+                                }
+LINE 13:                         param list   {
+LINE 13:                            param   {
+LINE 13:                               type specifier   {
+LINE 13:                                  int   {}
+                                      }
+LINE 13:                               id   {
+LINE 13:                                  first   {}
+                                      }
+                                   }
+LINE 13:                            param list   {
+LINE 13:                               param   {
+LINE 13:                                  type specifier   {
+LINE 13:                                     int   {}
+                                         }
+LINE 13:                                  id   {
+LINE 13:                                     last   {}
+                                         }
+                                      }
+                                   }
+                                }
+                             }
+                          }
+LINE 13:                   compound statement   {
+LINE 14:                      local decs   {
+LINE 14:                         var dec   {
+LINE 14:                            type specifier   {
+LINE 14:                               int   {}
+                                   }
+LINE 14:                            id   {
+LINE 14:                               i   {}
+                                   }
+                                }
+LINE 15:                         local decs   {
+LINE 15:                            var dec   {
+LINE 15:                               type specifier   {
+LINE 15:                                  int   {}
+                                      }
+LINE 15:                               id   {
+LINE 15:                                  j   {}
+                                      }
+                                   }
+LINE 16:                            local decs   {
+LINE 16:                               var dec   {
+LINE 16:                                  type specifier   {
+LINE 16:                                     int   {}
+                                         }
+LINE 16:                                  id   {
+LINE 16:                                     small   {}
+                                         }
+                                      }
+LINE 18:                               local decs   {
+LINE 18:                                  empty   {}
+                                      }
+                                   }
+                                }
+                             }
+LINE 18:                      statement list   {
+LINE 18:                         statement   {
+LINE 18:                            expression statement   {
+LINE 18:                               expression   {
+LINE 18:                                  var   {
+LINE 18:                                     id   {
+LINE 18:                                        i   {}
+                                            }
+                                         }
+LINE 18:                                  expression   {
+LINE 18:                                     comp exp   {
+LINE 18:                                        E   {
+LINE 18:                                           T   {
+LINE 18:                                              F   {
+LINE 18:                                                 factor   {
+LINE 18:                                                    id   {
+LINE 18:                                                       first   {}
+                                                           }
+                                                        }
+                                                     }
+                                                  }
+                                               }
+                                            }
+                                         }
+                                      }
+                                   }
+                                }
+LINE 19:                         statement list   {
+LINE 19:                            statement   {
+LINE 19:                               while statement   {
+LINE 19:                                  expression   {
+LINE 19:                                     comp exp   {
+LINE 19:                                        E   {
+LINE 19:                                           T   {
+LINE 19:                                              F   {
+LINE 19:                                                 factor   {
+LINE 19:                                                    id   {
+LINE 19:                                                       i   {}
+                                                           }
+                                                        }
+                                                     }
+                                                  }
+                                               }
+LINE 19:                                        relop   {
+LINE 19:                                           <   {}
+                                               }
+LINE 19:                                        E   {
+LINE 19:                                           E   {
+LINE 19:                                              T   {
+LINE 19:                                                 F   {
+LINE 19:                                                    factor   {
+LINE 19:                                                       id   {
+LINE 19:                                                          last   {}
+                                                              }
+                                                           }
+                                                        }
+                                                     }
+                                                  }
+LINE 19:                                           addop   {
+LINE 19:                                              -   {}
+                                                  }
+LINE 19:                                           T   {
+LINE 19:                                              F   {
+LINE 19:                                                 factor   {
+LINE 19:                                                    num   {
+LINE 19:                                                       1   {}
+                                                           }
+                                                        }
+                                                     }
+                                                  }
+                                               }
+                                            }
+                                         }
+LINE 19:                                  statement   {
+LINE 19:                                     compound statement   {
+LINE 21:                                        local decs   {
+LINE 21:                                           empty   {}
+                                               }
+LINE 21:                                        statement list   {
+LINE 21:                                           statement   {
+LINE 21:                                              expression statement   {
+LINE 21:                                                 expression   {
+LINE 21:                                                    var   {
+LINE 21:                                                       id   {
+LINE 21:                                                          j   {}
+                                                              }
+                                                           }
+LINE 21:                                                    expression   {
+LINE 21:                                                       comp exp   {
+LINE 21:                                                          E   {
+LINE 21:                                                             T   {
+LINE 21:                                                                F   {
+LINE 21:                                                                   factor   {
+LINE 21:                                                                      id   {
+LINE 21:                                                                         i   {}
+                                                                             }
+                                                                          }
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+                                                           }
+                                                        }
+                                                     }
+                                                  }
+LINE 22:                                           statement list   {
+LINE 22:                                              statement   {
+LINE 22:                                                 expression statement   {
+LINE 22:                                                    expression   {
+LINE 22:                                                       var   {
+LINE 22:                                                          id   {
+LINE 22:                                                             small   {}
+                                                                 }
+                                                              }
+LINE 22:                                                       expression   {
+LINE 22:                                                          comp exp   {
+LINE 22:                                                             E   {
+LINE 22:                                                                T   {
+LINE 22:                                                                   F   {
+LINE 22:                                                                      factor   {
+LINE 22:                                                                         id   {
+LINE 22:                                                                            j   {}
+                                                                                }
+                                                                             }
+                                                                          }
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+                                                           }
+                                                        }
+                                                     }
+LINE 23:                                              statement list   {
+LINE 23:                                                 statement   {
+LINE 23:                                                    while statement   {
+LINE 23:                                                       expression   {
+LINE 23:                                                          comp exp   {
+LINE 23:                                                             E   {
+LINE 23:                                                                T   {
+LINE 23:                                                                   F   {
+LINE 23:                                                                      factor   {
+LINE 23:                                                                         id   {
+LINE 23:                                                                            j   {}
+                                                                                }
+                                                                             }
+                                                                          }
+                                                                       }
+                                                                    }
+LINE 23:                                                             relop   {
+LINE 23:                                                                <   {}
+                                                                    }
+LINE 23:                                                             E   {
+LINE 23:                                                                T   {
+LINE 23:                                                                   F   {
+LINE 23:                                                                      factor   {
+LINE 23:                                                                         id   {
+LINE 23:                                                                            last   {}
+                                                                                }
+                                                                             }
+                                                                          }
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+LINE 23:                                                       statement   {
+LINE 23:                                                          compound statement   {
+LINE 24:                                                             local decs   {
+LINE 24:                                                                empty   {}
+                                                                    }
+LINE 24:                                                             statement list   {
+LINE 24:                                                                statement   {
+LINE 24:                                                                   if statement   {
+LINE 24:                                                                      expression   {
+LINE 24:                                                                         comp exp   {
+LINE 24:                                                                            E   {
+LINE 24:                                                                               T   {
+LINE 24:                                                                                  F   {
+LINE 24:                                                                                     factor   {
+LINE 24:                                                                                        id   {
+LINE 24:                                                                                           A   {}
+                                                                                               }
+LINE 24:                                                                                        [   {}
+LINE 24:                                                                                        expression   {
+LINE 24:                                                                                           comp exp   {
+LINE 24:                                                                                              E   {
+LINE 24:                                                                                                 T   {
+LINE 24:                                                                                                    F   {
+LINE 24:                                                                                                       factor   {
+LINE 24:                                                                                                          id   {
+LINE 24:                                                                                                             j   {}
+                                                                                                                 }
+                                                                                                              }
+                                                                                                           }
+                                                                                                        }
+                                                                                                     }
+                                                                                                  }
+                                                                                               }
+LINE 24:                                                                                        ]   {}
+                                                                                            }
+                                                                                         }
+                                                                                      }
+                                                                                   }
+LINE 24:                                                                            relop   {
+LINE 24:                                                                               <   {}
+                                                                                   }
+LINE 24:                                                                            E   {
+LINE 24:                                                                               T   {
+LINE 24:                                                                                  F   {
+LINE 24:                                                                                     factor   {
+LINE 24:                                                                                        id   {
+LINE 24:                                                                                           A   {}
+                                                                                               }
+LINE 24:                                                                                        [   {}
+LINE 24:                                                                                        expression   {
+LINE 24:                                                                                           comp exp   {
+LINE 24:                                                                                              E   {
+LINE 24:                                                                                                 T   {
+LINE 24:                                                                                                    F   {
+LINE 24:                                                                                                       factor   {
+LINE 24:                                                                                                          id   {
+LINE 24:                                                                                                             small   {}
+                                                                                                                 }
+                                                                                                              }
+                                                                                                           }
+                                                                                                        }
+                                                                                                     }
+                                                                                                  }
+                                                                                               }
+LINE 24:                                                                                        ]   {}
+                                                                                            }
+                                                                                         }
+                                                                                      }
+                                                                                   }
+                                                                                }
+                                                                             }
+LINE 25:                                                                      statement   {
+LINE 25:                                                                         expression statement   {
+LINE 25:                                                                            expression   {
+LINE 25:                                                                               var   {
+LINE 25:                                                                                  id   {
+LINE 25:                                                                                     small   {}
+                                                                                         }
+                                                                                      }
+LINE 25:                                                                               expression   {
+LINE 25:                                                                                  comp exp   {
+LINE 25:                                                                                     E   {
+LINE 25:                                                                                        T   {
+LINE 25:                                                                                           F   {
+LINE 25:                                                                                              factor   {
+LINE 25:                                                                                                 id   {
+LINE 25:                                                                                                    j   {}
+                                                                                                        }
+                                                                                                     }
+                                                                                                  }
+                                                                                               }
+                                                                                            }
+                                                                                         }
+                                                                                      }
+                                                                                   }
+                                                                                }
+                                                                             }
+                                                                          }
+                                                                       }
+LINE 26:                                                                statement list   {
+LINE 26:                                                                   statement   {
+LINE 26:                                                                      expression statement   {
+LINE 26:                                                                         expression   {
+LINE 26:                                                                            var   {
+LINE 26:                                                                               id   {
+LINE 26:                                                                                  j   {}
+                                                                                      }
+                                                                                   }
+LINE 26:                                                                            expression   {
+LINE 26:                                                                               comp exp   {
+LINE 26:                                                                                  E   {
+LINE 26:                                                                                     E   {
+LINE 26:                                                                                        T   {
+LINE 26:                                                                                           F   {
+LINE 26:                                                                                              factor   {
+LINE 26:                                                                                                 id   {
+LINE 26:                                                                                                    j   {}
+                                                                                                        }
+                                                                                                     }
+                                                                                                  }
+                                                                                               }
+                                                                                            }
+LINE 26:                                                                                     addop   {
+LINE 26:                                                                                        +   {}
+                                                                                            }
+LINE 26:                                                                                     T   {
+LINE 26:                                                                                        F   {
+LINE 26:                                                                                           factor   {
+LINE 26:                                                                                              num   {
+LINE 26:                                                                                                 1   {}
+                                                                                                     }
+                                                                                                  }
+                                                                                               }
+                                                                                            }
+                                                                                         }
+                                                                                      }
+                                                                                   }
+                                                                                }
+                                                                             }
+                                                                          }
+LINE 27:                                                                   statement list   {
+LINE 27:                                                                      empty   {}
+                                                                          }
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+                                                           }
+                                                        }
+LINE 28:                                                 statement list   {
+LINE 28:                                                    statement   {
+LINE 28:                                                       expression statement   {
+LINE 28:                                                          expression   {
+LINE 28:                                                             comp exp   {
+LINE 28:                                                                E   {
+LINE 28:                                                                   T   {
+LINE 28:                                                                      F   {
+LINE 28:                                                                         factor   {
+LINE 28:                                                                            fun call   {
+LINE 28:                                                                               id   {
+LINE 28:                                                                                  switch   {}
+                                                                                      }
+LINE 28:                                                                               args   {
+LINE 28:                                                                                  arg list   {
+LINE 28:                                                                                     expression   {
+LINE 28:                                                                                        comp exp   {
+LINE 28:                                                                                           E   {
+LINE 28:                                                                                              T   {
+LINE 28:                                                                                                 F   {
+LINE 28:                                                                                                    factor   {
+LINE 28:                                                                                                       id   {
+LINE 28:                                                                                                          A   {}
+                                                                                                              }
+                                                                                                           }
+                                                                                                        }
+                                                                                                     }
+                                                                                                  }
+                                                                                               }
+                                                                                            }
+LINE 28:                                                                                     arg list   {
+LINE 28:                                                                                        expression   {
+LINE 28:                                                                                           comp exp   {
+LINE 28:                                                                                              E   {
+LINE 28:                                                                                                 T   {
+LINE 28:                                                                                                    F   {
+LINE 28:                                                                                                       factor   {
+LINE 28:                                                                                                          id   {
+LINE 28:                                                                                                             i   {}
+                                                                                                                 }
+                                                                                                              }
+                                                                                                           }
+                                                                                                        }
+                                                                                                     }
+                                                                                                  }
+                                                                                               }
+LINE 28:                                                                                        arg list   {
+LINE 28:                                                                                           expression   {
+LINE 28:                                                                                              comp exp   {
+LINE 28:                                                                                                 E   {
+LINE 28:                                                                                                    T   {
+LINE 28:                                                                                                       F   {
+LINE 28:                                                                                                          factor   {
+LINE 28:                                                                                                             id   {
+LINE 28:                                                                                                                small   {}
+                                                                                                                    }
+                                                                                                                 }
+                                                                                                              }
+                                                                                                           }
+                                                                                                        }
+                                                                                                     }
+                                                                                                  }
+                                                                                               }
+                                                                                            }
+                                                                                         }
+                                                                                      }
+                                                                                   }
+                                                                                }
+                                                                             }
+                                                                          }
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+                                                           }
+LINE 29:                                                    statement list   {
+LINE 29:                                                       statement   {
+LINE 29:                                                          expression statement   {
+LINE 29:                                                             expression   {
+LINE 29:                                                                var   {
+LINE 29:                                                                   id   {
+LINE 29:                                                                      i   {}
+                                                                          }
+                                                                       }
+LINE 29:                                                                expression   {
+LINE 29:                                                                   comp exp   {
+LINE 29:                                                                      E   {
+LINE 29:                                                                         E   {
+LINE 29:                                                                            T   {
+LINE 29:                                                                               F   {
+LINE 29:                                                                                  factor   {
+LINE 29:                                                                                     id   {
+LINE 29:                                                                                        i   {}
+                                                                                            }
+                                                                                         }
+                                                                                      }
+                                                                                   }
+                                                                                }
+LINE 29:                                                                         addop   {
+LINE 29:                                                                            +   {}
+                                                                                }
+LINE 29:                                                                         T   {
+LINE 29:                                                                            F   {
+LINE 29:                                                                               factor   {
+LINE 29:                                                                                  num   {
+LINE 29:                                                                                     1   {}
+                                                                                         }
+                                                                                      }
+                                                                                   }
+                                                                                }
+                                                                             }
+                                                                          }
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+LINE 30:                                                       statement list   {
+LINE 30:                                                          empty   {}
+                                                              }
+                                                           }
+                                                        }
+                                                     }
+                                                  }
+                                               }
+                                            }
+                                         }
+                                      }
+                                   }
+LINE 31:                            statement list   {
+LINE 31:                               empty   {}
+                                   }
+                                }
+                             }
+                          }
+                       }
+                    }
+LINE 34:             declaration list   {
+LINE 34:                declaration   {
+LINE 34:                   fun dec   {
+LINE 34:                      type specifier   {
+LINE 34:                         void   {}
+                             }
+LINE 34:                      id   {
+LINE 34:                         main   {}
+                             }
+LINE 34:                      params   {
+LINE 34:                         void   {}
+                             }
+LINE 34:                      compound statement   {
+LINE 35:                         local decs   {
+LINE 35:                            var dec   {
+LINE 35:                               type specifier   {
+LINE 35:                                  int   {}
+                                      }
+LINE 35:                               id   {
+LINE 35:                                  i   {}
+                                      }
+                                   }
+LINE 37:                            local decs   {
+LINE 37:                               empty   {}
+                                   }
+                                }
+LINE 37:                         statement list   {
+LINE 37:                            statement   {
+LINE 37:                               expression statement   {
+LINE 37:                                  expression   {
+LINE 37:                                     var   {
+LINE 37:                                        id   {
+LINE 37:                                           i   {}
+                                               }
+                                            }
+LINE 37:                                     expression   {
+LINE 37:                                        comp exp   {
+LINE 37:                                           E   {
+LINE 37:                                              T   {
+LINE 37:                                                 F   {
+LINE 37:                                                    factor   {
+LINE 37:                                                       num   {
+LINE 37:                                                          0   {}
+                                                              }
+                                                           }
+                                                        }
+                                                     }
+                                                  }
+                                               }
+                                            }
+                                         }
+                                      }
+                                   }
+LINE 38:                            statement list   {
+LINE 38:                               statement   {
+LINE 38:                                  while statement   {
+LINE 38:                                     expression   {
+LINE 38:                                        comp exp   {
+LINE 38:                                           E   {
+LINE 38:                                              T   {
+LINE 38:                                                 F   {
+LINE 38:                                                    factor   {
+LINE 38:                                                       id   {
+LINE 38:                                                          i   {}
+                                                              }
+                                                           }
+                                                        }
+                                                     }
+                                                  }
+LINE 38:                                           relop   {
+LINE 38:                                              <   {}
+                                                  }
+LINE 38:                                           E   {
+LINE 38:                                              T   {
+LINE 38:                                                 F   {
+LINE 38:                                                    factor   {
+LINE 38:                                                       num   {
+LINE 38:                                                          10   {}
+                                                              }
+                                                           }
+                                                        }
+                                                     }
+                                                  }
+                                               }
+                                            }
+LINE 38:                                     statement   {
+LINE 38:                                        compound statement   {
+LINE 39:                                           local decs   {
+LINE 39:                                              empty   {}
+                                                  }
+LINE 39:                                           statement list   {
+LINE 39:                                              statement   {
+LINE 39:                                                 expression statement   {
+LINE 39:                                                    expression   {
+LINE 39:                                                       var   {
+LINE 39:                                                          id   {
+LINE 39:                                                             x   {}
+                                                                 }
+LINE 39:                                                          [   {}
+LINE 39:                                                          expression   {
+LINE 39:                                                             comp exp   {
+LINE 39:                                                                E   {
+LINE 39:                                                                   T   {
+LINE 39:                                                                      F   {
+LINE 39:                                                                         factor   {
+LINE 39:                                                                            id   {
+LINE 39:                                                                               i   {}
+                                                                                   }
+                                                                                }
+                                                                             }
+                                                                          }
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+LINE 39:                                                       expression   {
+LINE 39:                                                          comp exp   {
+LINE 39:                                                             E   {
+LINE 39:                                                                T   {
+LINE 39:                                                                   F   {
+LINE 39:                                                                      factor   {
+LINE 39:                                                                         read   {}
+                                                                             }
+                                                                          }
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+                                                           }
+                                                        }
+                                                     }
+LINE 40:                                              statement list   {
+LINE 40:                                                 statement   {
+LINE 40:                                                    expression statement   {
+LINE 40:                                                       expression   {
+LINE 40:                                                          var   {
+LINE 40:                                                             id   {
+LINE 40:                                                                i   {}
+                                                                    }
+                                                                 }
+LINE 40:                                                          expression   {
+LINE 40:                                                             comp exp   {
+LINE 40:                                                                E   {
+LINE 40:                                                                   E   {
+LINE 40:                                                                      T   {
+LINE 40:                                                                         F   {
+LINE 40:                                                                            factor   {
+LINE 40:                                                                               id   {
+LINE 40:                                                                                  i   {}
+                                                                                      }
+                                                                                   }
+                                                                                }
+                                                                             }
+                                                                          }
+LINE 40:                                                                   addop   {
+LINE 40:                                                                      +   {}
+                                                                          }
+LINE 40:                                                                   T   {
+LINE 40:                                                                      F   {
+LINE 40:                                                                         factor   {
+LINE 40:                                                                            num   {
+LINE 40:                                                                               1   {}
+                                                                                   }
+                                                                                }
+                                                                             }
+                                                                          }
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+                                                           }
+                                                        }
+LINE 41:                                                 statement list   {
+LINE 41:                                                    empty   {}
+                                                        }
+                                                     }
+                                                  }
+                                               }
+                                            }
+                                         }
+                                      }
+LINE 42:                               statement list   {
+LINE 42:                                  statement   {
+LINE 42:                                     expression statement   {
+LINE 42:                                        expression   {
+LINE 42:                                           comp exp   {
+LINE 42:                                              E   {
+LINE 42:                                                 T   {
+LINE 42:                                                    F   {
+LINE 42:                                                       factor   {
+LINE 42:                                                          fun call   {
+LINE 42:                                                             id   {
+LINE 42:                                                                sort   {}
+                                                                    }
+LINE 42:                                                             args   {
+LINE 42:                                                                arg list   {
+LINE 42:                                                                   expression   {
+LINE 42:                                                                      comp exp   {
+LINE 42:                                                                         E   {
+LINE 42:                                                                            T   {
+LINE 42:                                                                               F   {
+LINE 42:                                                                                  factor   {
+LINE 42:                                                                                     id   {
+LINE 42:                                                                                        x   {}
+                                                                                            }
+                                                                                         }
+                                                                                      }
+                                                                                   }
+                                                                                }
+                                                                             }
+                                                                          }
+LINE 42:                                                                   arg list   {
+LINE 42:                                                                      expression   {
+LINE 42:                                                                         comp exp   {
+LINE 42:                                                                            E   {
+LINE 42:                                                                               T   {
+LINE 42:                                                                                  F   {
+LINE 42:                                                                                     factor   {
+LINE 42:                                                                                        num   {
+LINE 42:                                                                                           0   {}
+                                                                                               }
+                                                                                            }
+                                                                                         }
+                                                                                      }
+                                                                                   }
+                                                                                }
+                                                                             }
+LINE 42:                                                                      arg list   {
+LINE 42:                                                                         expression   {
+LINE 42:                                                                            comp exp   {
+LINE 42:                                                                               E   {
+LINE 42:                                                                                  T   {
+LINE 42:                                                                                     F   {
+LINE 42:                                                                                        factor   {
+LINE 42:                                                                                           num   {
+LINE 42:                                                                                              10   {}
+                                                                                                  }
+                                                                                               }
+                                                                                            }
+                                                                                         }
+                                                                                      }
+                                                                                   }
+                                                                                }
+                                                                             }
+                                                                          }
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+                                                           }
+                                                        }
+                                                     }
+                                                  }
+                                               }
+                                            }
+                                         }
+LINE 43:                                  statement list   {
+LINE 43:                                     statement   {
+LINE 43:                                        expression statement   {
+LINE 43:                                           expression   {
+LINE 43:                                              var   {
+LINE 43:                                                 id   {
+LINE 43:                                                    i   {}
+                                                        }
+                                                     }
+LINE 43:                                              expression   {
+LINE 43:                                                 comp exp   {
+LINE 43:                                                    E   {
+LINE 43:                                                       T   {
+LINE 43:                                                          F   {
+LINE 43:                                                             factor   {
+LINE 43:                                                                num   {
+LINE 43:                                                                   0   {}
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+                                                           }
+                                                        }
+                                                     }
+                                                  }
+                                               }
+                                            }
+LINE 44:                                     statement list   {
+LINE 44:                                        statement   {
+LINE 44:                                           while statement   {
+LINE 44:                                              expression   {
+LINE 44:                                                 comp exp   {
+LINE 44:                                                    E   {
+LINE 44:                                                       T   {
+LINE 44:                                                          F   {
+LINE 44:                                                             factor   {
+LINE 44:                                                                id   {
+LINE 44:                                                                   i   {}
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+                                                           }
+LINE 44:                                                    relop   {
+LINE 44:                                                       <   {}
+                                                           }
+LINE 44:                                                    E   {
+LINE 44:                                                       T   {
+LINE 44:                                                          F   {
+LINE 44:                                                             factor   {
+LINE 44:                                                                num   {
+LINE 44:                                                                   10   {}
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+                                                           }
+                                                        }
+                                                     }
+LINE 44:                                              statement   {
+LINE 44:                                                 compound statement   {
+LINE 45:                                                    local decs   {
+LINE 45:                                                       empty   {}
+                                                           }
+LINE 45:                                                    statement list   {
+LINE 45:                                                       statement   {
+LINE 45:                                                          write statement   {
+LINE 45:                                                             expression   {
+LINE 45:                                                                comp exp   {
+LINE 45:                                                                   E   {
+LINE 45:                                                                      T   {
+LINE 45:                                                                         F   {
+LINE 45:                                                                            factor   {
+LINE 45:                                                                               id   {
+LINE 45:                                                                                  x   {}
+                                                                                      }
+LINE 45:                                                                               [   {}
+LINE 45:                                                                               expression   {
+LINE 45:                                                                                  comp exp   {
+LINE 45:                                                                                     E   {
+LINE 45:                                                                                        T   {
+LINE 45:                                                                                           F   {
+LINE 45:                                                                                              factor   {
+LINE 45:                                                                                                 id   {
+LINE 45:                                                                                                    i   {}
+                                                                                                        }
+                                                                                                     }
+                                                                                                  }
+                                                                                               }
+                                                                                            }
+                                                                                         }
+                                                                                      }
+LINE 45:                                                                               ]   {}
+                                                                                   }
+                                                                                }
+                                                                             }
+                                                                          }
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+LINE 46:                                                       statement list   {
+LINE 46:                                                          statement   {
+LINE 46:                                                             expression statement   {
+LINE 46:                                                                expression   {
+LINE 46:                                                                   var   {
+LINE 46:                                                                      id   {
+LINE 46:                                                                         i   {}
+                                                                             }
+                                                                          }
+LINE 46:                                                                   expression   {
+LINE 46:                                                                      comp exp   {
+LINE 46:                                                                         E   {
+LINE 46:                                                                            E   {
+LINE 46:                                                                               T   {
+LINE 46:                                                                                  F   {
+LINE 46:                                                                                     factor   {
+LINE 46:                                                                                        id   {
+LINE 46:                                                                                           i   {}
+                                                                                               }
+                                                                                            }
+                                                                                         }
+                                                                                      }
+                                                                                   }
+LINE 46:                                                                            addop   {
+LINE 46:                                                                               +   {}
+                                                                                   }
+LINE 46:                                                                            T   {
+LINE 46:                                                                               F   {
+LINE 46:                                                                                  factor   {
+LINE 46:                                                                                     num   {
+LINE 46:                                                                                        1   {}
+                                                                                            }
+                                                                                         }
+                                                                                      }
+                                                                                   }
+                                                                                }
+                                                                             }
+                                                                          }
+                                                                       }
+                                                                    }
+                                                                 }
+LINE 47:                                                          statement list   {
+LINE 47:                                                             empty   {}
+                                                                 }
+                                                              }
+                                                           }
+                                                        }
+                                                     }
+                                                  }
+                                               }
+LINE 48:                                        statement list   {
+LINE 48:                                           statement   {
+LINE 48:                                              writeln statement   {
+                                                     }
+                                                  }
+LINE 49:                                           statement list   {
+LINE 49:                                              empty   {}
+                                                  }
+                                               }
+                                            }
+                                         }
+                                      }
+                                   }
+                                }
+                             }
+                          }
+                       }
+                    }
+                 }
+              }
+           }
+        }
+
+VAR DEC on line 2 assigned type "int arr"
+Adding VAR DEC "x" to the global symbol table
+Adding FUN DEC "switch" to the global symbol table
+PARAM on line 4 assigned type "int arr"
+Adding PARAM "A" to the local declarations
+PARAM on line 4 assigned type "int"
+Adding PARAM "i" to the local declarations
+PARAM on line 4 assigned type "int"
+Adding PARAM "j" to the local declarations
+Adding PARAM "j" to the local declarations
+VAR DEC on line 5 assigned type "int"
+Adding VAR DEC "temp" to the local declarations
+Connecting "i" on line 6 to local declaration on line 4
+Connecting "j" on line 6 to local declaration on line 4
+Connecting "j" on line 6 to local declaration on line 4
+Connecting "temp" on line 7 to local declaration on line 5
+Connecting "A" on line 7 to local declaration on line 4
+Connecting "i" on line 7 to local declaration on line 4
+Connecting "A" on line 8 to local declaration on line 4
+Connecting "i" on line 8 to local declaration on line 4
+Connecting "A" on line 8 to local declaration on line 4
+Connecting "j" on line 8 to local declaration on line 4
+Connecting "j" on line 8 to local declaration on line 4
+Connecting "A" on line 9 to local declaration on line 4
+Connecting "j" on line 9 to local declaration on line 4
+Connecting "j" on line 9 to local declaration on line 4
+Connecting "temp" on line 9 to local declaration on line 5
+Adding FUN DEC "sort" to the global symbol table
+PARAM on line 13 assigned type "int arr"
+Adding PARAM "A" to the local declarations
+PARAM on line 13 assigned type "int"
+Adding PARAM "first" to the local declarations
+PARAM on line 13 assigned type "int"
+Adding PARAM "last" to the local declarations
+Adding PARAM "last" to the local declarations
+VAR DEC on line 14 assigned type "int"
+Adding VAR DEC "i" to the local declarations
+VAR DEC on line 15 assigned type "int"
+Adding VAR DEC "j" to the local declarations
+VAR DEC on line 16 assigned type "int"
+Adding VAR DEC "small" to the local declarations
+Connecting "i" on line 18 to local declaration on line 14
+Connecting "first" on line 18 to local declaration on line 13
+Connecting "i" on line 19 to local declaration on line 14
+Connecting "last" on line 19 to local declaration on line 13
+Connecting "last" on line 19 to local declaration on line 13
+Connecting "j" on line 21 to local declaration on line 15
+Connecting "i" on line 21 to local declaration on line 14
+Connecting "small" on line 22 to local declaration on line 16
+Connecting "j" on line 22 to local declaration on line 15
+Connecting "j" on line 23 to local declaration on line 15
+Connecting "last" on line 23 to local declaration on line 13
+Connecting "last" on line 23 to local declaration on line 13
+Connecting "A" on line 24 to local declaration on line 13
+Connecting "j" on line 24 to local declaration on line 15
+Connecting "A" on line 24 to local declaration on line 13
+Connecting "small" on line 24 to local declaration on line 16
+Connecting "small" on line 25 to local declaration on line 16
+Connecting "j" on line 25 to local declaration on line 15
+Connecting "j" on line 26 to local declaration on line 15
+Connecting "j" on line 26 to local declaration on line 15
+Connecting "switch" on line 28 to global declaration on line 4
+Connecting "A" on line 28 to local declaration on line 13
+Connecting "i" on line 28 to local declaration on line 14
+Connecting "small" on line 28 to local declaration on line 16
+Connecting "i" on line 29 to local declaration on line 14
+Connecting "i" on line 29 to local declaration on line 14
+Adding FUN DEC "main" to the global symbol table
+VAR DEC on line 35 assigned type "int"
+Adding VAR DEC "i" to the local declarations
+Connecting "i" on line 37 to local declaration on line 35
+Connecting "i" on line 38 to local declaration on line 35
+Connecting "x" on line 39 to global declaration on line 2
+Connecting "i" on line 39 to local declaration on line 35
+Connecting "i" on line 40 to local declaration on line 35
+Connecting "i" on line 40 to local declaration on line 35
+Connecting "sort" on line 42 to global declaration on line 13
+Connecting "x" on line 42 to global declaration on line 2
+Connecting "i" on line 43 to local declaration on line 35
+Connecting "i" on line 44 to local declaration on line 35
+Connecting "x" on line 45 to global declaration on line 2
+Connecting "i" on line 45 to local declaration on line 35
+Connecting "i" on line 46 to local declaration on line 35
+Connecting "i" on line 46 to local declaration on line 35
+FACTOR on line 6 assigned type "int"
+F on line 6 assigned type "int"
+T on line 6 assigned type "int"
+E on line 6 assigned type "int"
+FACTOR on line 6 assigned type "int"
+F on line 6 assigned type "int"
+T on line 6 assigned type "int"
+E on line 6 assigned type "int"
+COMP EXP on line 6 assigned type "int"
+EXPRESSION on line 6 assigned type "int"
+GETTING TYPE: int
+IF STATEMENT on line 6 assigned type "int"
+FACTOR on line 7 assigned type "int"
+F on line 7 assigned type "int"
+T on line 7 assigned type "int"
+E on line 7 assigned type "int"
+COMP EXP on line 7 assigned type "int"
+EXPRESSION on line 7 assigned type "int"
+GETTING TYPE: int
+FACTOR on line 7 assigned type "int arr"
+F on line 7 assigned type "int arr"
+T on line 7 assigned type "int"
+E on line 7 assigned type "int"
+COMP EXP on line 7 assigned type "int"
+EXPRESSION on line 7 assigned type "int arr"
+GETTING TYPE: int arr
+ERROR: for EXPRESSION on line 7 expected type "int" arr but was assigned type "int arr"

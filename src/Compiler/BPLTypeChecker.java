@@ -22,7 +22,7 @@ public class BPLTypeChecker{
 		parseTree = parser.getParseTree();
 		findReferences(parseTree);
 		typeCheck(parseTree);
-		typeCheckEnd(parseTree);
+	//	typeCheckEnd(parseTree);
 	}
 
 	//top-down pass that finds all references to variables and functions
@@ -187,8 +187,9 @@ public class BPLTypeChecker{
 			//get var type
 			String varType = typeCheckVar(node.getChild(0));
 			String expType = typeCheck(node.getChild(1));
+
 			if(!varType.equals(expType)){
-				throw new BPLException("ERROR: for EXPRESSION on line "+node.getLineNumber()+" expected type \""+varType+"\" arr but was assigned type \""+expType+"\"");
+				throw new BPLException("ERROR: for EXPRESSION on line "+node.getLineNumber()+" expected type \""+varType+"\" but was assigned type \""+expType+"\"");
 			}				
 			node.getChild(0).setType(varType);
 			node.getChild(1).setType(expType);
@@ -319,7 +320,7 @@ public class BPLTypeChecker{
 			  /*if(!type.contains("ptr")){
 			  throw new BPLException("ERROR: for F on line "+node.getChild(1).getLineNumber()+" expected type \"int ptr\" or \"string ptr\" but was assigned type \""+type+"\"");
 			  }*/
-			  type.replace(" ptr", "");
+			  type = type.replace(" ptr", "");
 			  }
 			  else if(f0.kind.equals("&")){
 				  type+=" ptr";
@@ -352,6 +353,7 @@ public class BPLTypeChecker{
 		ParseTreeNode factor2 = node.getChild(2);
 		ParseTreeNode dec;
 		String type;
+		
 		//(EXPRESSION) or FUN_CALL or read()
 		if(factor0.kind.equals("expression") || factor0.kind.equals("fun call") || factor0.kind.equals("read")){
 			return typeCheck(factor0);
@@ -361,7 +363,7 @@ public class BPLTypeChecker{
 			dec = factor0.getChild(0).getDeclaration();
 			
 			type = dec.getType();
-			
+	
 			//type = dec.getChild(0).getChild(0).kind;
 			if(factor2 != null){
 				String expType = typeCheckExpression(factor2);
@@ -369,6 +371,7 @@ public class BPLTypeChecker{
 					throw new BPLException("ERROR: for Factor on line "+factor2.getLineNumber()+" expected type \"int\" but was assigned type \""+expType+"\"");
 				}
 				factor2.setType(expType);
+				type = type.replace(" arr", "");	
 			}
 		}
 		//*<id>
