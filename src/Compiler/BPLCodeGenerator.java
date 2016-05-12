@@ -77,9 +77,12 @@ public class BPLCodeGenerator{
 		}
 		if(child2 != null && child2.kind.equals("[")){ //<id>[<num>]
 			ParseTreeNode num = node.getChild(3);
-			int n = Integer.parseInt(num.getChild(0).kind);
+			
+			if(!num.kind.equals("]")){
+				int n = Integer.parseInt(num.getChild(0).kind);
 
-			pos = pos+n-1;
+				pos = pos+n-1;
+			}
 		}
 		id.setDepth(depth);
 		id.getChild(0).setDepth(depth);
@@ -193,42 +196,6 @@ public class BPLCodeGenerator{
 		if(node.kind.equals("fun dec")){
 			generateFunDec(node);
 		}
-		/*else if(node.kind.equals("if statement")){
-		  generateIfStatement(node);
-		  }
-		  else if(node.kind.equals("while statement")){
-		  generateWhileStatement(node);
-		  }
-		  else if(node.kind.equals("return statement")){
-		  generateReturnStatement(node);
-		  }
-		  else if(node.kind.equals("write statement") || node.kind.equals("writeln statement")){
-		  generateWriteStatement(node);
-		  }
-		  else if(node.kind.equals("expression")){
-		  generateExpression(node);
-		  }
-		  else if(node.kind.equals("comp exp")){
-		  generateCompExp(node);
-		  }
-		  else if(node.kind.equals("E")){
-		  generateE(node);
-		  }
-		  else if(node.kind.equals("T")){
-		  generateT(node);
-		  }
-		  else if(node.kind.equals("F")){
-		  generateF(node);
-		  }
-		  else if(node.kind.equals("factor")){
-		  generateFactor(node);
-		  }
-		  else if(node.kind.equals("read")){
-		  generateRead(node);
-		  }
-		  else if(node.kind.equals("fun call")){
-		  generateFunCall(node);
-		  }*/
 		for(ParseTreeNode child:node.getChildren()){
 			if(child != null){
 				generateCode(child);
@@ -486,7 +453,7 @@ public class BPLCodeGenerator{
 				else if(decDepth == 1){ //params
 					int pos = 16+8*dec.getPosition();
 					System.out.println("imul $8, %eax #find offset");
-					System.out.println("addq $"+pos+"(%rbx), %rax #find address of element");
+					System.out.println("addq "+pos+"(%rbx), %rax #find address of element");
 					System.out.println("movq 0(%rax), %rax #set value of array at offset");
 				}
 				else{ //local vars
@@ -643,10 +610,6 @@ public class BPLCodeGenerator{
 		}
 	}
 
-	private void evaluateArrExpression(ParseTreeNode node){
-	
-	}
-
 	private void evaluateIntStringExpression(ParseTreeNode node){
 		ParseTreeNode child = node.getChild(0);
 		if(child.kind.equals("comp exp")){
@@ -686,7 +649,7 @@ public class BPLCodeGenerator{
 					else if(decDepth == 1){ //params
 						int pos = 16+8*dec.getPosition();
 						System.out.println("imul $8, %eax #find index");
-						System.out.println("addq $"+pos+"(%rbx), %rax #find address of element");
+						System.out.println("addq "+pos+"(%rbx), %rax #find address of element");
 						System.out.println("movq %r10, 0(%rax) #move value to place in array");   
 					}
 					else{ //local vars
@@ -728,6 +691,38 @@ public class BPLCodeGenerator{
 		}
 	}
 
+	private void evaluateArrExpression(ParseTreeNode exp){
+		System.out.println("KIND: "+exp.kind);
+	
+		ParseTreeNode child = exp.getChild(0);
+
+		ParseTreeNode dec = child.getChild(0).getChild(0).getDeclaration();
+		if(dec.kind.equals("param") || dec.kind.equals("var dec")){
+			if(dec.getChild(1).kind.equals("*")){
+				dec = dec.getChild(2);
+			}
+			else{
+				dec = dec.getChild(1);
+			}
+		}
+
+		String id = child.getChild(0).getChild(0).kind;
+		int decDepth = dec.getDepth();
+
+		if(decDepth == 0){
+			System.out.println("movq %rax, "+id+" #set value of "+id);
+		}
+		else if(decDepth == 1){ //params
+			int pos = 16+8*dec.getPosition();
+			System.out.println("movq %rax, "+pos+"(%rbx) #move rax into position");
+		}
+		else{ //local vars
+			int pos = -8*dec.getPosition()-8;
+			System.out.println("movq %rax, "+pos+"(%rbx) #move rax into position");
+		}
+
+	}
+
 	private void evaluateExpression(ParseTreeNode exp){
 		if(exp.getType().equals("int") || exp.getType().equals("void")){
 			evaluateIntStringExpression(exp);
@@ -745,7 +740,7 @@ public class BPLCodeGenerator{
 			evaluateArrExpression(exp);
 		}
 		else if(exp.getType().equals("string arr")){
-			//TODO			
+			evaluateArrExpression(exp);			
 		}
 	}
 

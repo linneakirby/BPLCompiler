@@ -199,7 +199,10 @@ public class BPLTypeChecker{
 					if(varDec.getChild(2) == null || !varDec.getChild(2).kind.equals("[")){
 						throw new BPLException("ERROR: for VAR on line "+node.getLineNumber()+" expected type \""+varType+"\" arr but was assigned type \""+varType+"\"");
 					}
-					//varType = varType.concat(" arr");
+					
+					if(!node.getChild(2).kind.equals("expression")){
+						varType = varType.concat(" arr");
+					}
 				}
 		}
 		else if(node.getChild(1).kind.equals("id")){ // *<id>
@@ -449,6 +452,14 @@ public class BPLTypeChecker{
 				p = paramlist.getChild(0);
 				paramlist = paramlist.getChild(1);
 				localDecs.add(p);
+
+				String type = p.getChild(0).getChild(0).kind;
+				
+				if(p.getChild(2).kind.equals("[")){
+					type = type.concat(" arr");
+				}
+				p.setType(type);
+				
 				if(debug){
 					System.out.println("Adding "+p.kind.toUpperCase()+" \""+p.getChild(1).getChild(0).kind+"\" to the local declarations");
 				}
