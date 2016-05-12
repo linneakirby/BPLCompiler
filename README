@@ -1,8 +1,15 @@
 BPL Compiler - Linnea Kirby
 
+I affirm that I have adhered to the Honor Code in this assignment - Linnea Kirby
+
+To use the Code Generator:
+	1. Run "make" to compile the files
+	2. bplc will run the code generator's main() function with a program argument of your choice and will output to the terminal. To save to a file, use '>'
+	3. Use gcc to compile the output from the code generator.
+
 To use the Type Checker:
 	1. Run "make" to compile the files
-	3. runMain will run the type checker's main() function. Just change the name of the file you want to run
+	2. runMain will run the type checker's main() function. Just change the name of the file you want to run
 	and make sure it's in the testFiles/ folder.
 
 

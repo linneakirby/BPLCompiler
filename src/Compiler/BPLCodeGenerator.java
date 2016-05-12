@@ -92,7 +92,6 @@ public class BPLCodeGenerator{
 		}*/
 		id.setPosition(pos);
 		id.getChild(0).setPosition(pos);
-		System.out.println("#Position of "+id.getChild(0).kind+": "+pos);
 		return pos;
 	}
 
@@ -354,6 +353,9 @@ public class BPLCodeGenerator{
 		else{
 			ParseTreeNode exp = node.getChild(0);
 			String type = exp.getType();
+			
+
+
 			if(type.equals("int")){
 				evaluateExpression(exp);
 				System.out.println("movq %rax, %rsi #move num into 2nd arg to prepare for printing");
@@ -468,6 +470,8 @@ public class BPLCodeGenerator{
 			else{
 				ParseTreeNode dec = child.getChild(0).getDeclaration();
 
+				String type = dec.getType();
+
 				if(dec.kind.equals("param") || dec.kind.equals("var dec")){
 					if(dec.getChild(1).kind.equals("*")){
 						dec = dec.getChild(2);
@@ -477,22 +481,38 @@ public class BPLCodeGenerator{
 					}
 				}
 
+
 				String id = child.getChild(0).kind;
 
 				int decDepth = dec.getDepth();
 
-				if(decDepth == 0){
-					System.out.println("movq "+id+", %rax #move "+id+" to rax");
+				if(type.contains("arr")){
+					if(decDepth == 0){
+						System.out.println("movq "+id+", %rax #move "+id+" to rax");
+					}
+					else if(decDepth == 1){ //params
+						int pos = 16+8*dec.getPosition();
+						System.out.println("movq "+pos+" (%rbx), %rax #move fp to rax");
+					}
+					else{ //local vars
+						int pos = -8*dec.getPosition()-8;
+						System.out.println("movq %rbx, %rax #move fp to rax");
+						System.out.println("addq $"+pos+", %rax");
+					}
 				}
-				else if(decDepth == 1){ //params
-					int pos = 16+8*dec.getPosition();
-					System.out.println("movq "+pos+"(%rbx), %rax #move "+id+" to rax");
+				else{
+					if(decDepth == 0){
+						System.out.println("movq "+id+", %rax #move "+id+" to rax");
+					}
+					else if(decDepth == 1){ //params
+						int pos = 16+8*dec.getPosition();
+						System.out.println("movq "+pos+"(%rbx), %rax #move "+id+" to rax");
+					}
+					else{ //local vars
+						int pos = -8*dec.getPosition()-8;
+						System.out.println("movq "+pos+"(%rbx), %rax #move "+id+" to rax");
+					}
 				}
-				else{ //local vars
-					int pos = -8*dec.getPosition()-8;
-					System.out.println("movq "+pos+"(%rbx), %rax #move "+id+" to rax");
-				}
-
 			}
 		}
 		else if(child.kind.equals("fun call")){
@@ -692,11 +712,11 @@ public class BPLCodeGenerator{
 	}
 
 	private void evaluateArrExpression(ParseTreeNode exp){
-		System.out.println("KIND: "+exp.kind);
-	
 		ParseTreeNode child = exp.getChild(0);
 
-		ParseTreeNode dec = child.getChild(0).getChild(0).getDeclaration();
+		evaluateCompExp(child);
+		
+		/*ParseTreeNode dec = child.getChild(0).getChild(0).getDeclaration();
 		if(dec.kind.equals("param") || dec.kind.equals("var dec")){
 			if(dec.getChild(1).kind.equals("*")){
 				dec = dec.getChild(2);
@@ -719,7 +739,7 @@ public class BPLCodeGenerator{
 		else{ //local vars
 			int pos = -8*dec.getPosition()-8;
 			System.out.println("movq %rax, "+pos+"(%rbx) #move rax into position");
-		}
+		}*/
 
 	}
 
