@@ -1,5 +1,4 @@
 /* A program to input, sort, and output. */
-int x[10];
 
 void switch (int A[], int i, int j) {
 	int temp;
@@ -34,6 +33,7 @@ void sort( int A[], int first, int last ) {
 void main(void) {
 	int i;
 
+	int x[10];
 	i = 0;
 	while (i < 10) {
 		x[i] = read();

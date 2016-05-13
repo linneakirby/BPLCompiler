@@ -2,6 +2,9 @@ BPL Compiler - Linnea Kirby
 
 I affirm that I have adhered to the Honor Code in this assignment - Linnea Kirby
 
+Note: I fixed a few things slightly after 9pm, but I handed in a version before 9, so if you'd rather, you can grade me on whatever I handed in before 9. Otherwise, this version works somewhat better.
+
+
 To use the Code Generator:
 	1. Run "make" to compile the files
 	2. bplc will run the code generator's main() function with a program argument of your choice and will output to a file called <filename>.s

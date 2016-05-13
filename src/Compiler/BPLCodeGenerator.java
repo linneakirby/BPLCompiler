@@ -379,10 +379,27 @@ public class BPLCodeGenerator{
 		return "L"+labelCount;
 	}
 
+	private ParseTreeNode findId(ParseTreeNode exp){
+		ParseTreeNode id = exp.getChild(0);
+		if(id.kind.equals("comp exp")){
+			id = id.getChild(0).getChild(2).getChild(2).getChild(0).getChild(0);
+		}
+		return id;
+	}
+
 	private int evaluateArgList(ParseTreeNode al){
 		if(al != null && !al.kind.equals("empty")){
 			int x = 1+evaluateArgList(al.getChild(1));
+			String type = al.getChild(0).getType();
 			evaluateExpression(al.getChild(0));
+			if(type.contains("arr")){
+				ParseTreeNode id = findId(al.getChild(0));
+				ParseTreeNode dec = id.getChild(0).getDeclaration();
+				int decDepth = dec.getChild(1).getChild(0).getDepth();
+				if(decDepth == 1){
+				//	System.out.println("movq 0(%rax), %rax #for arrays");
+				}
+			}
 			System.out.println("push %rax #push arg onto stack");	
 			return x;
 		}
@@ -412,6 +429,10 @@ public class BPLCodeGenerator{
 			System.out.println("movq $"+string+", %rax #move string literal to rax");
 		}
 		else if(child.kind.equals("read")){
+			System.out.println("movq %rsp, %rax");
+			System.out.println("and $0xF, %rax #find the low-order 4 bits of %rsp");
+			System.out.println("subq %rax, %rsp #aligns %rsp to be divisible by 16");
+			System.out.println("push %rax #saves odd bits of old rsp");
 			System.out.println("subq $40, %rsp #prepare to read");
 			System.out.println("movq $0, %rax");
 			System.out.println("mov %rsp, %rsi");
@@ -422,6 +443,8 @@ public class BPLCodeGenerator{
 			System.out.println("pop %rbx #pop fp off stack");
 			System.out.println("movq 24(%rsp), %rax");
 			System.out.println("addq $40, %rsp");
+			System.out.println("pop %rsi #retrieves saved increment into a temp register");
+			System.out.println("addq %rsi, %rsp #returns rsp to what it was before reading");
 
 		}
 		else if(child.kind.equals("*")){
@@ -456,7 +479,7 @@ public class BPLCodeGenerator{
 				else if(decDepth == 1){ //params
 					int pos = 16+8*dec.getPosition();
 					System.out.println("imul $8, %eax #find offset");
-					System.out.println("addq "+pos+"(%rbx), %rax #find address of element");
+					System.out.println("addq "+pos+"(%rbx), %rax #find address of elem");
 					System.out.println("movq 0(%rax), %rax #set value of array at offset");
 				}
 				else{ //local vars
@@ -489,7 +512,7 @@ public class BPLCodeGenerator{
 
 				if(type.contains("arr")){
 					if(decDepth == 0){
-						System.out.println("movq "+id+", %rax #move "+id+" to rax");
+						System.out.println("movq $"+id+", %rax #move "+id+" to rax");
 					}
 					else if(decDepth == 1){ //params
 						int pos = 16+8*dec.getPosition();
